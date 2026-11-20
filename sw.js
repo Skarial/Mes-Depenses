@@ -1,4 +1,4 @@
-const CACHE='mes-depenses-v18';
+const CACHE='mes-depenses-v19';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
