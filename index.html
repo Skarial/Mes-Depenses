@@ -22,6 +22,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
 .app-nav button{min-height:44px;padding:4px 2px;border:0;border-radius:10px;background:transparent;color:#43546a;font:inherit;font-size:clamp(.7rem,3vw,.875rem);font-weight:700}
 .app-nav button[aria-pressed="true"]{background:#137b70;color:white}
 </style></head><body><main class="wrap"><header><div><h1>Mes dépenses</h1><small>Chaque euro compte, mois après mois.</small></div><span>Hors ligne</span></header>
+<div id="updateNotice" class="card" hidden><button type="button" id="reloadApp" class="link">Recharger pour appliquer la mise à jour</button></div>
 <div id="storageNotice" class="card warning" role="alert" hidden></div>
 
 <nav class="app-nav" aria-label="Rubriques">
@@ -307,6 +308,15 @@ portfolioForm.onsubmit=event=>{
 document.querySelector('[aria-controls="portfolioView"]').addEventListener('click',loadPortfolioForm);
 loadPortfolioForm();
 clearForm();render();renderStorageNotice();
-if('serviceWorker'in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.warn));
+if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
+  const workers=navigator.serviceWorker;
+  let hadController=Boolean(workers.controller);
+  workers.addEventListener('controllerchange',()=>{
+    if(hadController)$('updateNotice').hidden=false;
+    hadController=Boolean(workers.controller);
+  });
+  $('reloadApp').onclick=()=>location.reload();
+  window.addEventListener('load',()=>workers.register('./sw.js',{updateViaCache:'none'}).catch(console.warn));
+}
 })();
 </script></body></html>

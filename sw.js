@@ -1,7 +1,7 @@
-const CACHE='mes-depenses-v22';
+const CACHE='mes-depenses-v23';
 const ASSETS=['./','./index.html','./budget.js','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS.map(path=>new Request(new URL(path,self.location.href),{cache:'reload'})))).then(()=>self.skipWaiting()));
 });
 self.addEventListener('activate',event=>{
   event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('mes-depenses-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));
