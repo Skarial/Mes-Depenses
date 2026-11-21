@@ -17,10 +17,16 @@
 .pie-name{flex:1;overflow-wrap:anywhere;min-width:0}
 .pie-values{text-align:right;flex:none}
 .pie-values small{display:block;color:#526177;margin-top:3px}
-body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,select,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}.budget-note{font-size:13px;line-height:1.55;color:#526177}.budget-value{font-size:26px;font-weight:800;margin:8px 0}.warning{background:#fff5db;border:1px solid #efd39b;padding:12px;border-radius:11px;line-height:1.5}.salary-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #edf1f4}.salary-row span{flex:1}.salary-row button{min-height:40px}.period-choice{margin-bottom:12px}.salary-dialog{max-width:520px}details.budget-details{margin-top:14px}details.budget-details summary{cursor:pointer;color:#137b70;font-weight:650}#storageNotice[hidden]{display:none}#storageNotice button{display:block}#budgetSettings .grid{margin-top:12px}.check-label{display:flex;gap:8px;align-items:center}.check-label input{width:auto}.warning strong{display:block}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,select,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}.budget-note{font-size:13px;line-height:1.55;color:#526177}.budget-value{font-size:26px;font-weight:800;margin:8px 0}.warning{background:#fff5db;border:1px solid #efd39b;padding:12px;border-radius:11px;line-height:1.5}.salary-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #edf1f4}.salary-row span{flex:1}.salary-row button{min-height:40px}.salary-dialog{max-width:520px}details.budget-details{margin-top:14px}details.budget-details summary{cursor:pointer;color:#137b70;font-weight:650}#storageNotice[hidden]{display:none}#storageNotice button{display:block}#budgetSettings .grid{margin-top:12px}.check-label{display:flex;gap:8px;align-items:center}.check-label input{width:auto}.warning strong{display:block}
 .app-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-bottom:14px;padding:4px;background:#dfe8ed;border-radius:14px}
 .app-nav button{min-height:44px;padding:4px 2px;border:0;border-radius:10px;background:transparent;color:#43546a;font:inherit;font-size:clamp(.7rem,3vw,.875rem);font-weight:700}
 .app-nav button[aria-pressed="true"]{background:#137b70;color:white}
+.period-bar{display:grid;grid-template-columns:minmax(0,min(42%,9.5rem)) minmax(0,1fr);align-items:center;gap:6px;margin-bottom:8px}
+.period-bar[hidden]{display:none}
+.period-bar select{min-height:44px;padding:6px;font-size:.8rem}
+.period-bar .month{gap:3px}
+.period-bar .arrow{width:36px;height:44px;flex:none}
+.period-bar #month{min-width:0;text-align:center;font-size:.8rem;line-height:1.2;overflow-wrap:anywhere}
 </style></head><body><main class="wrap"><header><div><h1>Mes dépenses</h1><small>Chaque euro compte, mois après mois.</small></div><span>Hors ligne</span></header>
 <div id="updateNotice" class="card" hidden><button type="button" id="reloadApp" class="link">Recharger pour appliquer la mise à jour</button></div>
 <div id="storageNotice" class="card warning" role="alert" hidden></div>
@@ -32,7 +38,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
   <button type="button" aria-controls="portfolioView" aria-pressed="false">Patrimoine</button>
   <button type="button" aria-controls="settingsView" aria-pressed="false">Réglages</button>
 </nav>
-<section id="periodPicker" class="card"><label for="periodMode">Afficher</label><select id="periodMode" class="period-choice"><option value="month">Mois calendaire</option><option value="cycle">Cycle de paie</option></select><div class="month"><button id="prev" class="arrow" aria-label="Mois précédent">‹</button><strong id="month"></strong><button id="next" class="arrow" aria-label="Mois suivant">›</button></div></section>
+<section id="periodPicker" class="period-bar" aria-label="Période affichée"><select id="periodMode" aria-label="Type de période"><option value="month">Mois calendaire</option><option value="cycle">Cycle de paie</option></select><div class="month"><button id="prev" class="arrow" aria-label="Mois précédent">‹</button><strong id="month"></strong><button id="next" class="arrow" aria-label="Mois suivant">›</button></div></section>
 <section id="expensesView" aria-label="Dépenses">
 <section class="card hero"><small id="totalLabel">Total du mois</small><div class="total" id="total"></div><div class="delta"><span id="deltaLabel">Par rapport au mois précédent</span><b id="delta"></b></div></section>
 <section class="card"><h2>Dépenses par catégorie</h2><div id="categories"></div></section>
