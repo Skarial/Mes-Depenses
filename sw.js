@@ -1,5 +1,5 @@
-const CACHE='mes-depenses-v19';
-const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.svg'];
+const CACHE='mes-depenses-v20';
+const ASSETS=['./','./index.html','./budget.js','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });
@@ -10,11 +10,9 @@ self.addEventListener('fetch',event=>{
   const request=event.request;
   if(request.method!=='GET'||new URL(request.url).origin!==self.location.origin)return;
   if(request.mode==='navigate'){
-    event.respondWith(fetch(request).then(response=>{
-      if(response.ok){const clone=response.clone();event.waitUntil(caches.open(CACHE).then(cache=>cache.put(request,clone)));}
-      return response;
-    }).catch(()=>caches.match(request).then(response=>response||caches.match('./index.html'))));
+    // Serve HTML and the calculation module from the same installed release, even during an update.
+    event.respondWith(caches.open(CACHE).then(cache=>cache.match('./index.html')).then(response=>response||fetch(request)));
     return;
   }
-  event.respondWith(caches.match(request).then(response=>response||fetch(request)));
+  event.respondWith(caches.open(CACHE).then(cache=>cache.match(request)).then(response=>response||fetch(request)));
 });
