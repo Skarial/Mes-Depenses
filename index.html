@@ -17,8 +17,27 @@
 .pie-name{flex:1;overflow-wrap:anywhere;min-width:0}
 .pie-values{text-align:right;flex:none}
 .pie-values small{display:block;color:#526177;margin-top:3px}
-body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,select,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}.budget-note{font-size:13px;line-height:1.55;color:#526177}.budget-value{font-size:26px;font-weight:800;margin:8px 0}.warning{background:#fff5db;border:1px solid #efd39b;padding:12px;border-radius:11px;line-height:1.5}.salary-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #edf1f4}.salary-row span{flex:1}.salary-row button{min-height:40px}.period-choice{margin-bottom:12px}.salary-dialog{max-width:520px}details.budget-details{margin-top:14px}details.budget-details summary{cursor:pointer;color:#137b70;font-weight:650}#storageNotice[hidden]{display:none}#storageNotice button{display:block}#budgetSettings .grid{margin-top:12px}.check-label{display:flex;gap:8px;align-items:center}.check-label input{width:auto}.warning strong{display:block}</style></head><body><main class="wrap"><header><div><h1>Mes dépenses</h1><small>Chaque euro compte, mois après mois.</small></div><span>Hors ligne</span></header>
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,select,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}.budget-note{font-size:13px;line-height:1.55;color:#526177}.budget-value{font-size:26px;font-weight:800;margin:8px 0}.warning{background:#fff5db;border:1px solid #efd39b;padding:12px;border-radius:11px;line-height:1.5}.salary-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #edf1f4}.salary-row span{flex:1}.salary-row button{min-height:40px}.period-choice{margin-bottom:12px}.salary-dialog{max-width:520px}details.budget-details{margin-top:14px}details.budget-details summary{cursor:pointer;color:#137b70;font-weight:650}#storageNotice[hidden]{display:none}#storageNotice button{display:block}#budgetSettings .grid{margin-top:12px}.check-label{display:flex;gap:8px;align-items:center}.check-label input{width:auto}.warning strong{display:block}
+.app-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-bottom:14px;padding:4px;background:#dfe8ed;border-radius:14px}
+.app-nav button{min-height:44px;padding:4px 2px;border:0;border-radius:10px;background:transparent;color:#43546a;font:inherit;font-size:clamp(.75rem,3.4vw,.875rem);font-weight:700}
+.app-nav button[aria-pressed="true"]{background:#137b70;color:white}
+</style></head><body><main class="wrap"><header><div><h1>Mes dépenses</h1><small>Chaque euro compte, mois après mois.</small></div><span>Hors ligne</span></header>
 <div id="storageNotice" class="card warning" role="alert" hidden></div>
+
+<nav class="app-nav" aria-label="Rubriques">
+  <button type="button" aria-controls="expensesView" aria-pressed="true">Dépenses</button>
+  <button type="button" aria-controls="budgetView" aria-pressed="false">Budget</button>
+  <button type="button" aria-controls="analysisView" aria-pressed="false">Analyses</button>
+  <button type="button" aria-controls="settingsView" aria-pressed="false">Réglages</button>
+</nav>
+<section id="periodPicker" class="card"><label for="periodMode">Afficher</label><select id="periodMode" class="period-choice"><option value="month">Mois calendaire</option><option value="cycle">Cycle de paie</option></select><div class="month"><button id="prev" class="arrow" aria-label="Mois précédent">‹</button><strong id="month"></strong><button id="next" class="arrow" aria-label="Mois suivant">›</button></div></section>
+<section id="expensesView" aria-label="Dépenses">
+<section class="card hero"><small id="totalLabel">Total du mois</small><div class="total" id="total"></div><div class="delta"><span id="deltaLabel">Par rapport au mois précédent</span><b id="delta"></b></div></section>
+<section class="card"><h2>Dépenses par catégorie</h2><div id="categories"></div></section>
+<section class="card"><div class="history-head"><h2 id="historyTitle">Historique du mois</h2><button type="button" id="historyToggle" class="history-toggle" aria-expanded="false" aria-controls="entries" aria-label="Replier l’historique du mois"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div id="entries" hidden></div></section>
+<form id="form" hidden><div id="formContext" class="inline-context"></div><div class="grid"><div><label for="amount">Montant (€)</label><input id="amount" inputmode="decimal" placeholder="" required></div><div><label for="date">Date</label><input type="date" id="date" required></div><div class="full"><label for="expenseKind">Nature budgétaire</label><select id="expenseKind"><option value="variable">Dépense variable</option><option value="fixed">Charge fixe déjà couverte par la réserve</option><option value="bitcoin">DCA Bitcoin</option><option value="savings">Versement d’épargne hors Bitcoin</option></select></div></div><button class="primary" id="submit">+ Ajouter la dépense</button><div class="actions"><button type="button" id="cancel" class="link" hidden>Annuler la modification</button><button type="button" id="delete" class="link danger" hidden>Supprimer cette dépense</button></div></form>
+</section>
+<section id="budgetView" aria-label="Budget" hidden>
 <section class="card"><button type="button" id="receiveSalary" class="primary" style="margin-top:0">J’ai reçu ma paie</button><p class="budget-note" id="salaryForecast"></p>
 <details class="budget-details"><summary>Paies enregistrées et corrections</summary><div id="salaryList"></div></details>
 <details class="budget-details"><summary>Prévisions budgétaires</summary><form id="budgetSettings"><div class="grid">
@@ -28,15 +47,17 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
 <div><label for="expectedDay">Jour prévu de paie (1 à 28)</label><input id="expectedDay" type="number" min="1" max="28" required></div></div>
 <p class="budget-note">Ces prévisions s’appliquent aux nouvelles paies. Chaque cycle conserve ses paramètres. Les charges fixes sont suivies séparément ; les réserves ne prouvent pas un paiement.</p>
 <button type="submit" class="link">Enregistrer les prévisions</button></form></details></section>
-<section class="card"><label for="periodMode">Afficher</label><select id="periodMode" class="period-choice"><option value="month">Mois calendaire</option><option value="cycle">Cycle de paie</option></select><div class="month"><button id="prev" class="arrow" aria-label="Mois précédent">‹</button><strong id="month"></strong><button id="next" class="arrow" aria-label="Mois suivant">›</button></div></section>
-<section class="card hero"><small id="totalLabel">Total du mois</small><div class="total" id="total"></div><div class="delta"><span id="deltaLabel">Par rapport au mois précédent</span><b id="delta"></b></div></section>
 <section class="card" id="cycleBudget" hidden><h2>Budget variable du cycle</h2><div id="budgetContent"></div></section>
+</section>
+<section id="analysisView" aria-label="Analyses" hidden>
 <section class="card"><button type="button" id="analyzeCurrent" class="link">Analyser la période affichée</button><p class="budget-note" id="periodNote"></p></section>
-<section class="card"><h2>Dépenses par catégorie</h2><div id="categories"></div></section>
 <section class="card"><h2>Évolution sur 6 mois calendaires</h2><div id="comparison" class="compare"></div><p class="comparison-help">Touche un mois pour voir ses dépenses par catégorie.</p></section>
-<section class="card"><div class="history-head"><h2 id="historyTitle">Historique du mois</h2><button type="button" id="historyToggle" class="history-toggle" aria-expanded="false" aria-controls="entries" aria-label="Replier l’historique du mois"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div id="entries" hidden></div></section>
+</section>
+<section id="settingsView" aria-label="Réglages" hidden>
 <section class="card"><button class="link" id="manage">Gérer les catégories</button><div id="manager" class="manager"><p class="catHelp">Renomme ou supprime les catégories ci-dessous. Les dépenses existantes seront conservées.</p><div id="catList"></div><label for="newCat">Nouvelle catégorie</label><div class="mrow"><input id="newCat" maxlength="30" placeholder="Ex. Santé"><button id="addCat" type="button">Ajouter</button></div></div><div class="actions"><button class="link" id="export" type="button">Exporter mes données</button><button class="link" id="import" type="button">Importer une sauvegarde</button><button class="link" id="recovery" type="button">Récupérer une copie de sécurité</button><input id="file" type="file" accept=".json,application/json" hidden></div><details class="danger-zone"><summary>Options avancées</summary><p>Cette action efface les données actives. Exporte une sauvegarde avant de continuer ; les copies locales de récupération sont conservées.</p><button class="link danger" id="reset" type="button">Effacer les données actives</button></details></section>
-<form id="form" hidden><div id="formContext" class="inline-context"></div><div class="grid"><div><label for="amount">Montant (€)</label><input id="amount" inputmode="decimal" placeholder="" required></div><div><label for="date">Date</label><input type="date" id="date" required></div><div class="full"><label for="expenseKind">Nature budgétaire</label><select id="expenseKind"><option value="variable">Dépense variable</option><option value="fixed">Charge fixe déjà couverte par la réserve</option><option value="bitcoin">DCA Bitcoin</option><option value="savings">Versement d’épargne hors Bitcoin</option></select></div></div><button class="primary" id="submit">+ Ajouter la dépense</button><div class="actions"><button type="button" id="cancel" class="link" hidden>Annuler la modification</button><button type="button" id="delete" class="link danger" hidden>Supprimer cette dépense</button></div></form><footer>Les données restent sur cet appareil, sans compte ni serveur. Exporte régulièrement une sauvegarde : effacer les données du navigateur peut les supprimer.</footer></main><div id="toast" role="status"></div>
+<footer>Les données restent sur cet appareil, sans compte ni serveur. Exporte régulièrement une sauvegarde : effacer les données du navigateur peut les supprimer.</footer>
+</section>
+</main><div id="toast" role="status"></div>
 <dialog id="salaryDialog" class="month-dialog salary-dialog" aria-labelledby="salaryTitle"><div class="dialog-head"><h2 id="salaryTitle">J’ai reçu ma paie</h2><button type="button" id="closeSalary" class="dialog-close">Fermer</button></div>
 <form id="salaryForm"><div class="grid" style="margin-top:16px"><div><label for="salaryDate">Date réelle de réception</label><input id="salaryDate" type="date" required></div><div><label for="salaryNet">Montant net effectivement reçu (€)</label><input id="salaryNet" inputmode="decimal" required placeholder="Montant réel obligatoire"></div></div>
 <p class="budget-note" id="salaryImpact"></p><p class="budget-note">Le revenu moyen configuré est uniquement une prévision. Une confirmation démarre un cycle ; aucune dépense historique n’est modifiée.</p><p id="salaryError" class="warning" hidden role="alert"></p>
@@ -49,6 +70,23 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
   <button type="button" id="copyAnalysis" class="link">Copier le résumé</button>
   <span id="copyStatus" role="status"></span>
 </div></dialog>
+<script>
+{
+  const navigation = document.querySelector('.app-nav');
+  const buttons = [...navigation.querySelectorAll('button')];
+  const periodPicker = document.getElementById('periodPicker');
+  for (const button of buttons) {
+    button.addEventListener('click', () => {
+      for (const item of buttons) {
+        const active = item === button;
+        item.setAttribute('aria-pressed', String(active));
+        document.getElementById(item.getAttribute('aria-controls')).hidden = !active;
+      }
+      periodPicker.hidden = button.getAttribute('aria-controls') === 'settingsView';
+    });
+  }
+}
+</script>
 <script src="./budget.js"></script>
 <script>
 (()=>{'use strict';
