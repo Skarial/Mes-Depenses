@@ -21,7 +21,7 @@
   function portfolioSummary(portfolio={}){
     const assets=ASSET_FIELDS.map(field=>portfolio[field]).filter(value=>value!=null);
     const balances=[portfolio.balance1,portfolio.balance2];
-    const payments=[portfolio.payment1,portfolio.payment2];
+    const payments=[portfolio.payment1,portfolio.payment2,portfolio.insurance];
     if(![...assets,...balances,...payments].every(value=>value==null||safeCents(value)))fail('Montant de patrimoine invalide.');
     const sum=values=>total(values.map(value=>({cents:value??0})));
     const assetsCents=assets.length?sum(assets):null;
