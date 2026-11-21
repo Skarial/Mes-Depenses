@@ -32,6 +32,17 @@
       paymentsCents:sum(payments)
     };
   }
+  const GOAL_NAMES={works:'Travaux',emergency:'Réserve d’urgence',other:'Autre projet'};
+  function goalProgress(goal={}){
+    const {target=0,reserved=0,monthly=0}=goal;
+    if(![target,reserved,monthly].every(value=>safeCents(value)))fail('Montant d’objectif invalide.');
+    const remaining=Math.max(0,target-reserved);
+    return {
+      remaining,
+      percent:target?Math.min(100,reserved/target*100):0,
+      months:target&&monthly?Math.ceil(remaining/monthly):null
+    };
+  }
   function validate(input){
     if(!input||typeof input!=='object'||Array.isArray(input))fail('Sauvegarde invalide.');
     const version=input.version===undefined?1:input.version;if(![1,VERSION].includes(version))fail('Version de sauvegarde non prise en charge.');
@@ -47,6 +58,15 @@
       portfolioSummary(data.portfolio);
       const day=data.portfolio.paymentDay;
       if(day!=null&&(!Number.isInteger(day)||day<1||day>31))fail('Jour de prélèvement invalide.');
+    }
+    if(data.goals!==undefined){
+      if(!data.goals||typeof data.goals!=='object'||Array.isArray(data.goals))fail('Objectifs invalides.');
+      for(const name of Object.keys(GOAL_NAMES)){
+        if(!Object.hasOwn(data.goals,name))continue;
+        const goal=data.goals[name];
+        if(!goal||typeof goal!=='object'||Array.isArray(goal))fail('Objectif invalide.');
+        goalProgress(goal);
+      }
     }
     if(version===VERSION&&!data.settings)fail('Paramètres budgétaires manquants.');
     data.settings=validateSettings(data.settings||DEFAULTS);
@@ -145,5 +165,5 @@
     for(const e of [...m.rows].sort((a,b)=>a.date.localeCompare(b.date)||a.created-b.created))lines.push([e.date,JSON.stringify(e.category),({variable:'variable',fixed:'charge fixe',bitcoin:'Bitcoin',savings:'épargne'})[e.kind||'variable'],fmt(e.cents/100),JSON.stringify(e.description||'')].join(' | '));
     return lines.join('\n');
   }
-  return {VERSION,DEFAULTS,KEYS,KINDS,MIN_CYCLE_DAYS,MAX_CYCLE_DAYS,SMALL_EXPENSE_CENTS,MAX_IMPORT_BYTES,clone,validDate,ordinal,addDays,days,localToday,money,total,validate,validateSettings,monthPeriod,nextForecast,cycles,select,metrics,compare,dcaPlan,budget,upsertPayday,createStore,portfolioSummary,summarizeExpenses,report};
+  return {VERSION,DEFAULTS,KEYS,KINDS,MIN_CYCLE_DAYS,MAX_CYCLE_DAYS,SMALL_EXPENSE_CENTS,MAX_IMPORT_BYTES,clone,validDate,ordinal,addDays,days,localToday,money,total,validate,validateSettings,monthPeriod,nextForecast,cycles,select,metrics,compare,dcaPlan,budget,upsertPayday,createStore,portfolioSummary,GOAL_NAMES,goalProgress,summarizeExpenses,report};
 });

@@ -27,6 +27,11 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
 .period-bar .month{gap:3px}
 .period-bar .arrow{width:36px;height:44px;flex:none}
 .period-bar #month{min-width:0;text-align:center;font-size:.8rem;line-height:1.2;overflow-wrap:anywhere}
+.goals-card>summary{min-height:44px;display:list-item;padding:11px 0;cursor:pointer;color:#137b70;font-weight:750}
+.goal{border:0;padding:0;margin:14px 0 20px;min-width:0}
+.goal legend{font-weight:750;margin-bottom:8px}
+.goal progress{width:100%;accent-color:#137b70}
+.goal p{margin:6px 0}
 </style></head><body><main class="wrap"><header><div><h1>Mes dépenses</h1><small>Chaque euro compte, mois après mois.</small></div><span>Hors ligne</span></header>
 <div id="updateNotice" class="card" hidden><button type="button" id="reloadApp" class="link">Recharger pour appliquer la mise à jour</button></div>
 <div id="storageNotice" class="card warning" role="alert" hidden></div>
@@ -90,6 +95,15 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
     <p id="portfolioPayments" class="budget-note"></p>
     <button type="submit" class="primary">Enregistrer le patrimoine</button>
   </form>
+  <details id="goalsPanel" class="card goals-card">
+    <summary>Objectifs</summary>
+    <p class="budget-note">Indique la part de ton épargne réservée à chaque objectif. Elle est déjà comprise dans tes actifs.</p>
+    <form id="goalsForm">
+      <div id="goalFields"></div>
+      <p id="goalAllocation" class="budget-note"></p>
+      <button type="submit" class="primary">Enregistrer les objectifs</button>
+    </form>
+  </details>
 </section>
 <section id="settingsView" aria-label="Réglages" hidden>
 <section class="card"><button class="link" id="manage">Gérer les catégories</button><div id="manager" class="manager"><p class="catHelp">Renomme ou supprime les catégories ci-dessous. Les dépenses existantes seront conservées.</p><div id="catList"></div><label for="newCat">Nouvelle catégorie</label><div class="mrow"><input id="newCat" maxlength="30" placeholder="Ex. Santé"><button id="addCat" type="button">Ajouter</button></div></div><div class="actions"><button class="link" id="export" type="button">Exporter mes données</button><button class="link" id="import" type="button">Importer une sauvegarde</button><button class="link" id="recovery" type="button">Récupérer une copie de sécurité</button><input id="file" type="file" accept=".json,application/json" hidden></div><details class="danger-zone"><summary>Options avancées</summary><p>Cette action efface les données actives. Exporte une sauvegarde avant de continuer ; les copies locales de récupération sont conservées.</p><button class="link danger" id="reset" type="button">Effacer les données actives</button></details></section>
@@ -309,11 +323,97 @@ portfolioForm.onsubmit=event=>{
       if(raw)portfolio[input.name]=input.name==='paymentDay'?Number(raw):Budget.money(raw);
     }
     data=Budget.validate({...data,portfolio});
-    if(save()){renderPortfolio();notify('Patrimoine enregistré.');}
+    if(save()){renderPortfolio();renderGoalAllocation();notify('Patrimoine enregistré.');}
   }catch(error){notify(error.message);}
 };
-document.querySelector('[aria-controls="portfolioView"]').addEventListener('click',loadPortfolioForm);
+const goalFields=$('goalFields');
+const goalForm=$('goalsForm');
+const goalLabels={target:'Montant cible (€)',reserved:'Déjà réservé (€)',monthly:'Épargne mensuelle prévue (€)'};
+for(const [name,title] of Object.entries(Budget.GOAL_NAMES)){
+  const fieldset=document.createElement('fieldset');
+  fieldset.className='goal';
+  const legend=document.createElement('legend');
+  legend.textContent=title;
+  const grid=document.createElement('div');
+  grid.className='grid';
+  for(const [field,labelText] of Object.entries(goalLabels)){
+    const slot=document.createElement('div');
+    const label=document.createElement('label');
+    const input=document.createElement('input');
+    input.id=input.name=name+'-'+field;
+    input.inputMode='decimal';
+    label.htmlFor=input.id;
+    label.textContent=labelText;
+    slot.append(label,input);
+    grid.append(slot);
+  }
+  const progress=document.createElement('progress');
+  progress.id=name+'-progress';
+  progress.max=100;
+  progress.setAttribute('aria-label','Avancement · '+title);
+  const message=document.createElement('p');
+  message.id=name+'-summary';
+  message.className='budget-note';
+  fieldset.append(legend,grid,progress,message);
+  goalFields.append(fieldset);
+}
+function renderGoals(){
+  for(const name of Object.keys(Budget.GOAL_NAMES)){
+    const goal=data.goals?.[name]||{};
+    for(const field of Object.keys(goalLabels)){
+      const value=goal[field];
+      $(name+'-'+field).value=value==null?'':(value/100).toFixed(2).replace('.',',');
+    }
+    const {remaining,percent,months}=Budget.goalProgress(goal);
+    $(name+'-progress').hidden=!goal.target;
+    $(name+'-progress').value=percent;
+    const message=$(name+'-summary');
+    if(!goal.target){message.textContent='';continue}
+    if(!remaining){message.textContent='Objectif atteint';continue}
+    const parts=[Math.floor(percent)+' % · Reste '+fmt(remaining/100)];
+    if(months!==null){
+      const now=new Date();
+      if(months<=1200){
+        const estimate=new Date(now.getFullYear(),now.getMonth()+months,1);
+        parts.push('Estimé en '+month(estimate)+' (dans '+months+' mois)');
+      }else parts.push('Délai estimé supérieur à 100 ans');
+    }
+    message.textContent=parts.join(' · ');
+  }
+  renderGoalAllocation();
+}
+function renderGoalAllocation(){
+  const allocated=Object.keys(Budget.GOAL_NAMES).reduce((sum,name)=>sum+(data.goals?.[name]?.reserved??0),0);
+  const savings=data.portfolio?.savings;
+  const available=$('goalAllocation');
+  available.textContent=allocated?'Total réservé : '+fmt(allocated/100):'';
+  if(allocated&&savings!=null){
+    available.textContent+=allocated>savings
+      ? ' · Dépasse l’épargne disponible renseignée de '+fmt((allocated-savings)/100)
+      : ' · Épargne disponible sans affectation : '+fmt((savings-allocated)/100);
+  }
+}
+goalForm.onsubmit=event=>{
+  event.preventDefault();
+  try{
+    const goals={};
+    for(const name of Object.keys(Budget.GOAL_NAMES)){
+      goals[name]={};
+      for(const field of Object.keys(goalLabels)){
+        const raw=$(name+'-'+field).value.trim();
+        if(raw)goals[name][field]=Budget.money(raw);
+      }
+    }
+    data=Budget.validate({...data,goals});
+    if(save()){renderGoals();notify('Objectifs enregistrés.');}
+  }catch(error){notify(error.message);}
+};
+document.querySelector('[aria-controls="portfolioView"]').addEventListener('click',()=>{
+  loadPortfolioForm();
+  renderGoals();
+});
 loadPortfolioForm();
+renderGoals();
 clearForm();render();renderStorageNotice();
 if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
   const workers=navigator.serviceWorker;
