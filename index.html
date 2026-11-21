@@ -107,7 +107,9 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
 </section>
 <section id="settingsView" aria-label="Réglages" hidden>
 <section class="card"><button class="link" id="manage">Gérer les catégories</button><div id="manager" class="manager"><p class="catHelp">Renomme ou supprime les catégories ci-dessous. Les dépenses existantes seront conservées.</p><div id="catList"></div><label for="newCat">Nouvelle catégorie</label><div class="mrow"><input id="newCat" maxlength="30" placeholder="Ex. Santé"><button id="addCat" type="button">Ajouter</button></div></div><div class="actions"><button class="link" id="export" type="button">Exporter mes données</button><button class="link" id="import" type="button">Importer une sauvegarde</button><button class="link" id="recovery" type="button">Récupérer une copie de sécurité</button><input id="file" type="file" accept=".json,application/json" hidden></div><details class="danger-zone"><summary>Options avancées</summary><p>Cette action efface les données actives. Exporte une sauvegarde avant de continuer ; les copies locales de récupération sont conservées.</p><button class="link danger" id="reset" type="button">Effacer les données actives</button></details></section>
-<footer>Les données restent sur cet appareil, sans compte ni serveur. Exporte régulièrement une sauvegarde : effacer les données du navigateur peut les supprimer.</footer>
+<footer>Les données restent sur cet appareil, sans compte ni serveur. Exporte régulièrement une sauvegarde : effacer les données du navigateur peut les supprimer.
+<div><button class="link" id="shareApp" type="button" style="font-size:.875rem;min-height:44px;color:#526177;font-weight:500">Partager l’application</button></div>
+</footer>
 </section>
 </main><div id="toast" role="status"></div>
 <dialog id="salaryDialog" class="month-dialog salary-dialog" aria-labelledby="salaryTitle"><div class="dialog-head"><h2 id="salaryTitle">J’ai reçu ma paie</h2><button type="button" id="closeSalary" class="dialog-close">Fermer</button></div>
@@ -156,6 +158,26 @@ function updateHistoryVisibility(){const button=$('historyToggle');$('entries').
 $('historyToggle').onclick=()=>{historyExpanded=!historyExpanded;updateHistoryVisibility()};
 function save(replace=false){try{if(!store)throw Error('Stockage indisponible.');data=store.commit(data,{replace});loaded.error=null;renderStorageNotice();return true}catch(error){data=store?.snapshot()||Budget.validate({categories:[...defaults],expenses:[]});notify('Enregistrement impossible : '+error.message);render();return false}}
 function notify(s){$('toast').textContent=s;$('toast').style.display='block';clearTimeout(notify.t);notify.t=setTimeout(()=>$('toast').style.display='none',2800)}
+$('shareApp').onclick=async()=>{
+  const button=$('shareApp');
+  // Share only the public application URL, never the user's financial data.
+  const url='https://skarial.github.io/Mes-Depenses/';
+  button.disabled=true;
+  try{
+    if(typeof navigator.share==='function'){
+      try{
+        await navigator.share({title:'Mes dépenses',text:'Une application simple pour suivre ses dépenses et son budget.',url});
+        return;
+      }catch(error){if(error.name==='AbortError')return;}
+    }
+    try{
+      await navigator.clipboard.writeText(url);
+      notify('Lien de l’application copié.');
+    }catch{
+      window.prompt('Copie ce lien pour partager l’application :',url);
+    }
+  }finally{button.disabled=false;}
+};
 const rows=k=>data.expenses.filter(x=>x.date.slice(0,7)===k),sum=arr=>Budget.total(arr)/100;
 function render(){const period=activePeriod();let cur=period?Budget.select(data.expenses,period.start,period.end):[],total=sum(cur);$('month').textContent=period?periodTitle(period):'Aucune paie confirmée';$('total').textContent=fmt(total);renderBudget(period);
 
