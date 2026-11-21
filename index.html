@@ -18,8 +18,8 @@
 .pie-values{text-align:right;flex:none}
 .pie-values small{display:block;color:#526177;margin-top:3px}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,select,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}.budget-note{font-size:13px;line-height:1.55;color:#526177}.budget-value{font-size:26px;font-weight:800;margin:8px 0}.warning{background:#fff5db;border:1px solid #efd39b;padding:12px;border-radius:11px;line-height:1.5}.salary-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #edf1f4}.salary-row span{flex:1}.salary-row button{min-height:40px}.period-choice{margin-bottom:12px}.salary-dialog{max-width:520px}details.budget-details{margin-top:14px}details.budget-details summary{cursor:pointer;color:#137b70;font-weight:650}#storageNotice[hidden]{display:none}#storageNotice button{display:block}#budgetSettings .grid{margin-top:12px}.check-label{display:flex;gap:8px;align-items:center}.check-label input{width:auto}.warning strong{display:block}
-.app-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-bottom:14px;padding:4px;background:#dfe8ed;border-radius:14px}
-.app-nav button{min-height:44px;padding:4px 2px;border:0;border-radius:10px;background:transparent;color:#43546a;font:inherit;font-size:clamp(.75rem,3.4vw,.875rem);font-weight:700}
+.app-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-bottom:14px;padding:4px;background:#dfe8ed;border-radius:14px}
+.app-nav button{min-height:44px;padding:4px 2px;border:0;border-radius:10px;background:transparent;color:#43546a;font:inherit;font-size:clamp(.7rem,3vw,.875rem);font-weight:700}
 .app-nav button[aria-pressed="true"]{background:#137b70;color:white}
 </style></head><body><main class="wrap"><header><div><h1>Mes dépenses</h1><small>Chaque euro compte, mois après mois.</small></div><span>Hors ligne</span></header>
 <div id="storageNotice" class="card warning" role="alert" hidden></div>
@@ -28,6 +28,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
   <button type="button" aria-controls="expensesView" aria-pressed="true">Dépenses</button>
   <button type="button" aria-controls="budgetView" aria-pressed="false">Budget</button>
   <button type="button" aria-controls="analysisView" aria-pressed="false">Analyses</button>
+  <button type="button" aria-controls="portfolioView" aria-pressed="false">Patrimoine</button>
   <button type="button" aria-controls="settingsView" aria-pressed="false">Réglages</button>
 </nav>
 <section id="periodPicker" class="card"><label for="periodMode">Afficher</label><select id="periodMode" class="period-choice"><option value="month">Mois calendaire</option><option value="cycle">Cycle de paie</option></select><div class="month"><button id="prev" class="arrow" aria-label="Mois précédent">‹</button><strong id="month"></strong><button id="next" class="arrow" aria-label="Mois suivant">›</button></div></section>
@@ -52,6 +53,35 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
 <section id="analysisView" aria-label="Analyses" hidden>
 <section class="card"><button type="button" id="analyzeCurrent" class="link">Analyser la période affichée</button><p class="budget-note" id="periodNote"></p></section>
 <section class="card"><h2>Évolution sur 6 mois calendaires</h2><div id="comparison" class="compare"></div><p class="comparison-help">Touche un mois pour voir ses dépenses par catégorie.</p></section>
+</section>
+<section id="portfolioView" aria-label="Patrimoine" hidden>
+  <div class="card hero">
+    <small>Patrimoine net renseigné</small>
+    <div id="portfolioNet" class="total">—</div>
+    <div class="delta"><span>Actifs renseignés <b id="portfolioAssets">—</b></span><span>Capital restant dû <b id="portfolioDebt">—</b></span></div>
+  </div>
+  <form id="portfolioForm" class="card">
+    <h2>Actifs</h2>
+    <div class="grid">
+      <div><label for="portfolio-checking">Compte courant (€)</label><input id="portfolio-checking" name="checking" inputmode="decimal"></div>
+      <div><label for="portfolio-savings">Épargne disponible (€)</label><input id="portfolio-savings" name="savings" inputmode="decimal"></div>
+      <div><label for="portfolio-pea">PEA (€)</label><input id="portfolio-pea" name="pea" inputmode="decimal"></div>
+      <div><label for="portfolio-bitcoin">Bitcoin (€)</label><input id="portfolio-bitcoin" name="bitcoin" inputmode="decimal"></div>
+      <div><label for="portfolio-bitstack">Participation Bitstack (€)</label><input id="portfolio-bitstack" name="bitstack" inputmode="decimal"></div>
+      <div><label for="portfolio-property">Valeur estimée du logement (€)</label><input id="portfolio-property" name="property" inputmode="decimal"></div>
+    </div>
+    <h2 style="margin-top:20px">Crédit immobilier</h2>
+    <p class="budget-note">Saisis 0 pour un prêt inexistant ou soldé. Une case vide indique un montant inconnu.</p>
+    <div class="grid">
+      <div><label for="portfolio-balance1">Restant dû · Prêt 1 (€)</label><input id="portfolio-balance1" name="balance1" inputmode="decimal"></div>
+      <div><label for="portfolio-payment1">Mensualité · Prêt 1 (€)</label><input id="portfolio-payment1" name="payment1" inputmode="decimal"></div>
+      <div><label for="portfolio-balance2">Restant dû · Prêt 2 (€)</label><input id="portfolio-balance2" name="balance2" inputmode="decimal"></div>
+      <div><label for="portfolio-payment2">Mensualité · Prêt 2 (€)</label><input id="portfolio-payment2" name="payment2" inputmode="decimal"></div>
+      <div class="full"><label for="portfolio-paymentDay">Jour des prélèvements</label><input type="number" id="portfolio-paymentDay" name="paymentDay" min="1" max="31"></div>
+    </div>
+    <p id="portfolioPayments" class="budget-note"></p>
+    <button type="submit" class="primary">Enregistrer le patrimoine</button>
+  </form>
 </section>
 <section id="settingsView" aria-label="Réglages" hidden>
 <section class="card"><button class="link" id="manage">Gérer les catégories</button><div id="manager" class="manager"><p class="catHelp">Renomme ou supprime les catégories ci-dessous. Les dépenses existantes seront conservées.</p><div id="catList"></div><label for="newCat">Nouvelle catégorie</label><div class="mrow"><input id="newCat" maxlength="30" placeholder="Ex. Santé"><button id="addCat" type="button">Ajouter</button></div></div><div class="actions"><button class="link" id="export" type="button">Exporter mes données</button><button class="link" id="import" type="button">Importer une sauvegarde</button><button class="link" id="recovery" type="button">Récupérer une copie de sécurité</button><input id="file" type="file" accept=".json,application/json" hidden></div><details class="danger-zone"><summary>Options avancées</summary><p>Cette action efface les données actives. Exporte une sauvegarde avant de continuer ; les copies locales de récupération sont conservées.</p><button class="link danger" id="reset" type="button">Effacer les données actives</button></details></section>
@@ -82,7 +112,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
         item.setAttribute('aria-pressed', String(active));
         document.getElementById(item.getAttribute('aria-controls')).hidden = !active;
       }
-      periodPicker.hidden = button.getAttribute('aria-controls') === 'settingsView';
+      periodPicker.hidden = ['settingsView','portfolioView'].includes(button.getAttribute('aria-controls'));
     });
   }
 }
@@ -242,6 +272,40 @@ $('salaryForm').onsubmit=event=>{event.preventDefault();try{const old=data.payda
 function renderStorageNotice(){const root=$('storageNotice');root.replaceChildren();root.hidden=!loaded.error&&!loaded.legacyChanged;if(root.hidden)return;paragraph(root,loaded.error?'Les données enregistrées ne peuvent pas être chargées : '+loaded.error+' Elles ne sont pas effacées. Exporte une copie de récupération, puis importe une sauvegarde valide.':'Les anciennes données ont changé depuis la migration (ancien onglet ou ancienne application). Exporte les copies avant de continuer ; aucune fusion automatique ne sera faite.','');const button=document.createElement('button');button.type='button';button.className='link';button.textContent='Exporter les données de récupération';button.onclick=exportRecovery;root.append(button)}
 window.addEventListener('storage',event=>{if([Budget.KEYS.current,Budget.KEYS.legacy].includes(event.key)){const root=$('storageNotice');root.hidden=false;root.textContent='Les données ont changé dans un autre onglet. Exporte les copies de récupération puis recharge avant de modifier.';}});
 
+const portfolioForm=$('portfolioForm');
+function renderPortfolio(){
+  const portfolio=data.portfolio||{};
+  const summary=Budget.portfolioSummary(portfolio);
+  const amount=cents=>cents===null?'—':fmt(cents/100);
+  $('portfolioNet').textContent=amount(summary.netCents);
+  $('portfolioAssets').textContent=amount(summary.assetsCents);
+  $('portfolioDebt').textContent=amount(summary.debtCents);
+  $('portfolioPayments').textContent=summary.paymentsCents
+    ? 'Prélèvements renseignés : '+amount(summary.paymentsCents)+' par mois'+(portfolio.paymentDay?' · le '+portfolio.paymentDay:'')
+    : '';
+}
+function loadPortfolioForm(){
+  const portfolio=data.portfolio||{};
+  for(const input of portfolioForm.querySelectorAll('input')){
+    const value=portfolio[input.name];
+    input.value=value==null?'':input.name==='paymentDay'?String(value):(value/100).toFixed(2).replace('.',',');
+  }
+  renderPortfolio();
+}
+portfolioForm.onsubmit=event=>{
+  event.preventDefault();
+  try{
+    const portfolio={};
+    for(const input of portfolioForm.querySelectorAll('input')){
+      const raw=input.value.trim();
+      if(raw)portfolio[input.name]=input.name==='paymentDay'?Number(raw):Budget.money(raw);
+    }
+    data=Budget.validate({...data,portfolio});
+    if(save()){renderPortfolio();notify('Patrimoine enregistré.');}
+  }catch(error){notify(error.message);}
+};
+document.querySelector('[aria-controls="portfolioView"]').addEventListener('click',loadPortfolioForm);
+loadPortfolioForm();
 clearForm();render();renderStorageNotice();
 if('serviceWorker'in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.warn));
 })();

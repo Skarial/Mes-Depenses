@@ -17,6 +17,21 @@
   function money(raw){const s=String(raw).trim().replace(/\s/g,'').replace(',','.');if(!/^\d+(\.\d{1,2})?$/.test(s))fail('Montant invalide (deux décimales maximum).');const [whole,part='']=s.split('.');const n=Number(whole)*100+Number(part.padEnd(2,'0'));if(!safeCents(n))fail('Montant trop élevé.');return n;}
   function total(rows){return rows.reduce((n,e)=>{const value=n+e.cents;if(!safeCents(value))fail('Total trop élevé.');return value;},0);}
   function validateSettings(s){if(!s||typeof s!=='object')fail('Paramètres budgétaires invalides.');for(const k of ['incomeCents','fixedCents','savingsCents','weeklyDcaCents'])if(!safeCents(s[k]))fail('Montant budgétaire invalide.');if(!safeCents(s.fixedCents+s.savingsCents+s.weeklyDcaCents*6))fail('Total des réserves trop élevé.');if(!Number.isInteger(s.expectedDay)||s.expectedDay<1||s.expectedDay>28)fail('Jour prévisionnel invalide (1 à 28).');if(s.dcaWeekday!==null&&(!Number.isInteger(s.dcaWeekday)||s.dcaWeekday<0||s.dcaWeekday>6))fail('Jour de DCA invalide.');return clone(s);}
+  const ASSET_FIELDS=['checking','savings','pea','bitcoin','bitstack','property'];
+  function portfolioSummary(portfolio={}){
+    const assets=ASSET_FIELDS.map(field=>portfolio[field]).filter(value=>value!=null);
+    const balances=[portfolio.balance1,portfolio.balance2];
+    const payments=[portfolio.payment1,portfolio.payment2];
+    if(![...assets,...balances,...payments].every(value=>value==null||safeCents(value)))fail('Montant de patrimoine invalide.');
+    const sum=values=>total(values.map(value=>({cents:value??0})));
+    const assetsCents=assets.length?sum(assets):null;
+    const debtCents=balances.every(value=>value!=null)?sum(balances):null;
+    return {
+      assetsCents,debtCents,
+      netCents:assetsCents!==null&&debtCents!==null?assetsCents-debtCents:null,
+      paymentsCents:sum(payments)
+    };
+  }
   function validate(input){
     if(!input||typeof input!=='object'||Array.isArray(input))fail('Sauvegarde invalide.');
     const version=input.version===undefined?1:input.version;if(![1,VERSION].includes(version))fail('Version de sauvegarde non prise en charge.');
@@ -27,6 +42,12 @@
       if(!e||typeof e!=='object'||typeof e.id!=='string'||!e.id.trim()||ids.has(e.id)||!cats.includes(e.category)||!safeCents(e.cents,true)||!validDate(e.date)||typeof e.description!=='string'||e.description.length>80||!Number.isFinite(e.created)||(e.kind!==undefined&&!KINDS.includes(e.kind)))fail('Dépense invalide ou identifiant en double.');ids.add(e.id);
     }
     total(data.expenses);
+    if(data.portfolio!==undefined){
+      if(!data.portfolio||typeof data.portfolio!=='object'||Array.isArray(data.portfolio))fail('Patrimoine invalide.');
+      portfolioSummary(data.portfolio);
+      const day=data.portfolio.paymentDay;
+      if(day!=null&&(!Number.isInteger(day)||day<1||day>31))fail('Jour de prélèvement invalide.');
+    }
     if(version===VERSION&&!data.settings)fail('Paramètres budgétaires manquants.');
     data.settings=validateSettings(data.settings||DEFAULTS);
     if(version===VERSION&&!Array.isArray(data.paydays))fail('Liste des paies manquante.');
@@ -124,5 +145,5 @@
     for(const e of [...m.rows].sort((a,b)=>a.date.localeCompare(b.date)||a.created-b.created))lines.push([e.date,JSON.stringify(e.category),({variable:'variable',fixed:'charge fixe',bitcoin:'Bitcoin',savings:'épargne'})[e.kind||'variable'],fmt(e.cents/100),JSON.stringify(e.description||'')].join(' | '));
     return lines.join('\n');
   }
-  return {VERSION,DEFAULTS,KEYS,KINDS,MIN_CYCLE_DAYS,MAX_CYCLE_DAYS,SMALL_EXPENSE_CENTS,MAX_IMPORT_BYTES,clone,validDate,ordinal,addDays,days,localToday,money,total,validate,validateSettings,monthPeriod,nextForecast,cycles,select,metrics,compare,dcaPlan,budget,upsertPayday,createStore,summarizeExpenses,report};
+  return {VERSION,DEFAULTS,KEYS,KINDS,MIN_CYCLE_DAYS,MAX_CYCLE_DAYS,SMALL_EXPENSE_CENTS,MAX_IMPORT_BYTES,clone,validDate,ordinal,addDays,days,localToday,money,total,validate,validateSettings,monthPeriod,nextForecast,cycles,select,metrics,compare,dcaPlan,budget,upsertPayday,createStore,portfolioSummary,summarizeExpenses,report};
 });
