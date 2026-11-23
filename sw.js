@@ -1,4 +1,4 @@
-const CACHE='mes-depenses-v27';
+const CACHE='mes-depenses-v29';
 const ASSETS=['./','./index.html','./budget.js','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS.map(path=>new Request(new URL(path,self.location.href),{cache:'reload'})))).then(()=>self.skipWaiting()));
