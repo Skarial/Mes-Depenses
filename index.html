@@ -1,40 +1,232 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#14243a"><title>Mes dépenses</title><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml">
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f8f4e9"><title>Mes dépenses</title><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml">
 <style>
-:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#eef2f6;color:#172235;font-synthesis:none}*{box-sizing:border-box}body{margin:0}.wrap{max-width:680px;margin:auto;padding:18px 15px 70px}h1{font-size:26px;margin:4px 0}h2{font-size:17px;margin:0 0 14px}header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}header small{color:#778497}header span{background:#d9eee8;border-radius:20px;color:#12766a;font-size:12px;padding:8px;font-weight:700}.card{background:white;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 2px 14px #14243a0a}.month{display:flex;align-items:center;justify-content:space-between}.month strong{text-transform:capitalize}.arrow{border:1px solid #dde5eb;background:white;border-radius:12px;width:40px;height:40px;font-size:24px}.hero{background:#14243a;color:white}.hero small{color:#bdc8d5}.total{font-size:40px;font-weight:800;margin:7px 0}.delta{border-top:1px solid #ffffff29;padding-top:10px;display:flex;justify-content:space-between;gap:10px;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}label{font-size:12px;font-weight:650;color:#526177;display:block;margin-bottom:5px}input,select{font:inherit;padding:12px;border:1px solid #d8e1ea;border-radius:11px;width:100%;min-width:0}input[type=date]{min-height:45px}.full{grid-column:1/-1}.primary{background:#137b70;border:0;border-radius:12px;color:white;font:inherit;font-weight:750;padding:13px;width:100%;margin-top:13px}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #61c5b3;outline-offset:2px}.link{border:0;background:transparent;color:#137b70;font-weight:700;padding:9px 0}.danger{color:#b23c4b}.cat{margin:0 0 17px}.cathead{display:flex;justify-content:space-between;margin-bottom:6px;gap:8px}.track{height:10px;background:#edf2f6;border-radius:20px;overflow:hidden}.bar{height:100%;border-radius:20px}.inline-form-host:not(:empty){margin:-8px 0 16px;padding:14px;border-radius:12px;background:#f3f8f7}.inline-context{font-size:13px;font-weight:700;color:#137b70;margin-bottom:10px}.cat-action{cursor:pointer;border-radius:9px;padding:7px;margin:-7px -7px 10px;touch-action:manipulation}.cat-action:active{background:#edf6f4}.cat-action:focus-visible{outline:2px solid #137b70;outline-offset:2px}.history-head{display:flex;align-items:center;justify-content:flex-start;gap:2px;margin-bottom:14px}.history-head h2{margin:0}.history-toggle{border:0;background:transparent;color:#137b70;border-radius:8px;width:36px;height:36px;display:grid;place-items:center;cursor:pointer;padding:0}.history-toggle svg{transition:transform .18s ease}.history-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}.entry{display:flex;align-items:center;gap:9px;border-top:1px solid #edf1f4;padding:12px 0}.entry:first-child{border:0}.entry .info{flex:1;min-width:0}.entry small{color:#758095}.entry b{overflow-wrap:anywhere}.edit{border:0;background:#eef3f7;border-radius:8px;padding:8px}.compare{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.compare>button{border:0;font:inherit;color:inherit;min-width:0;background:#f3f6f9;padding:12px 4px;text-align:center;border-radius:11px}.compare>button:hover{background:#e4f2ee}.compare>button:active{background:#d1e9e2}.compare small{display:block}.compare strong{overflow-wrap:anywhere;display:block;margin-top:6px;font-size:16px}.compare small{color:#708095}.empty{color:#7a8798;text-align:center;padding:16px}.danger-zone{margin-top:25px;padding-top:14px;border-top:1px solid #edf1f4}.danger-zone summary{font-size:13px;color:#778497;cursor:pointer}.danger-zone p{font-size:12px;color:#778497;line-height:1.5}.danger-zone .danger{font-size:13px}.manager{display:none}.catHelp{font-size:13px;color:#526177;line-height:1.5;margin:0 0 12px}#catList{display:grid;gap:8px;margin-bottom:20px}#catList .mrow{margin:0}#catList .mrow{align-items:center}#catList .mrow button{min-width:44px;background:#fff0f0;color:#b23c4b;font-size:19px}.manager.open{display:block}.mrow{display:flex;gap:8px;margin:7px 0}.mrow button{border:0;border-radius:10px;padding:0 13px}.actions{display:flex;gap:15px;flex-wrap:wrap}footer{font-size:12px;color:#788697;line-height:1.6}#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);border-radius:12px;background:#14243a;color:white;padding:12px;display:none;font-size:13px;max-width:90vw}
-.comparison-help{font-size:13px;color:#526177;margin:12px 0 0}
-.month-dialog{border:0;border-radius:18px;padding:20px;width:calc(100% - 30px);max-width:480px;max-height:85vh;overflow:auto;color:#172235;box-shadow:0 14px 60px #14243a33}
-.analysis-report{margin-top:14px}.analysis-report textarea{width:100%;min-height:160px;padding:10px;border:1px solid #d8e1ea;border-radius:11px;font:inherit;resize:vertical}
-.month-dialog::backdrop{background:#14243a99}
-.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.dialog-head h2{margin:0;text-transform:capitalize}
-.dialog-close{font:inherit;background:#eef3f7;border:0;border-radius:10px;min-width:44px;min-height:44px;padding:10px}
-.month-breakdown-total{font-size:26px;font-weight:800;margin:16px 0;text-align:center}
-.month-pie{display:block;width:min(100%,240px);height:auto;margin:0 auto 20px}
-.pie-legend{list-style:none;padding:0;margin:0}
-.pie-legend li{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #edf1f4}
-.pie-swatch{width:13px;height:13px;border-radius:4px;flex:none}
-.pie-name{flex:1;overflow-wrap:anywhere;min-width:0}
-.pie-values{text-align:right;flex:none}
-.pie-values small{display:block;color:#526177;margin-top:3px}
-body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea,select,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}.budget-note{font-size:13px;line-height:1.55;color:#526177}.budget-value{font-size:26px;font-weight:800;margin:8px 0}.warning{background:#fff5db;border:1px solid #efd39b;padding:12px;border-radius:11px;line-height:1.5}.salary-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #edf1f4}.salary-row span{flex:1}.salary-row button{min-height:40px}.salary-dialog{max-width:520px}details.budget-details{margin-top:14px}details.budget-details summary{cursor:pointer;color:#137b70;font-weight:650}#storageNotice[hidden]{display:none}#storageNotice button{display:block}#budgetSettings .grid{margin-top:12px}.check-label{display:flex;gap:8px;align-items:center}.check-label input{width:auto}.warning strong{display:block}
-.app-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-bottom:14px;padding:4px;background:#dfe8ed;border-radius:14px}
-.app-nav button{min-height:44px;padding:4px 2px;border:0;border-radius:10px;background:transparent;color:#43546a;font:inherit;font-size:clamp(.7rem,3vw,.875rem);font-weight:700}
-.app-nav button[aria-pressed="true"]{background:#137b70;color:white}
-.period-bar{display:grid;grid-template-columns:minmax(0,min(42%,9.5rem)) minmax(0,1fr);align-items:center;gap:6px;margin-bottom:8px}
-.period-bar[hidden]{display:none}
-.period-bar select{min-height:44px;padding:6px;font-size:.8rem}
-.period-bar .month{gap:3px}
-.period-bar .arrow{width:36px;height:44px;flex:none}
-.period-bar #month{min-width:0;text-align:center;font-size:.8rem;line-height:1.2;overflow-wrap:anywhere}
-.goals-card>summary{min-height:44px;display:list-item;padding:11px 0;cursor:pointer;color:#137b70;font-weight:750}
-.goal{border:0;padding:0;margin:14px 0 20px;min-width:0}
-.goal legend{font-weight:750;margin-bottom:8px}
-.goal progress{width:100%;accent-color:#137b70}
-.goal p{margin:6px 0}
-</style></head><body><main class="wrap"><header><div><h1>Mes dépenses</h1><small>Chaque euro compte, mois après mois.</small></div><span>Hors ligne</span></header>
-<div id="updateNotice" class="card" hidden><button type="button" id="reloadApp" class="link">Recharger pour appliquer la mise à jour</button></div>
-<div id="storageNotice" class="card warning" role="alert" hidden></div>
+:root {
+  --paper: #f8f4e9;
+  --ink: #202921;
+  --ink-green: #234a38;
+  --muted-ink: #535d50;
+  --rule: #c6bfac;
+  --fine-rule: #dfd7c7;
+  --wash: #ede8da;
+  --control: #fdf9f0;
+  --danger: #8e382c;
+  --radius: 4px;
+  --serif: Georgia, serif;
+  --figures: ui-monospace, Consolas, monospace;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  color-scheme: only light;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); }
+.wrap {
+  max-width: 680px;
+  min-height: 100vh;
+  margin: auto;
+  padding: 18px 15px 70px;
+  background: var(--paper);
+}
+h1 { font-size: 26px; margin: 4px 0; }
+h2 { font: 1.85rem/1.12 var(--serif); margin: 0 0 14px; overflow-wrap: anywhere; }
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; margin-bottom: 10px; padding-bottom: 12px; border-bottom: 1px solid var(--fine-rule);
+}
+header span { color: var(--ink-green); font-size: .75rem; font-weight: 700; text-align: right; }
+.app-nav {
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px;
+  border-bottom: 1px solid var(--fine-rule);
+}
+.app-nav button {
+  min-height: 44px; padding: 4px 2px; border: 0; background: transparent;
+  color: var(--muted-ink); font: inherit; font-size: clamp(.7rem, 3vw, .875rem); font-weight: 700;
+}
+.app-nav button[aria-pressed="true"] { color: var(--ink-green); box-shadow: inset 0 -3px var(--ink-green); }
+.ledger-view { padding: 24px 6px 0; }
+.ruled-section { border-top: 1px solid var(--rule); padding: 16px 0; }
+.ledger-view > :first-child.ruled-section { border-top: 0; padding-top: 0; }
+.ruled-section + .ruled-section { margin-top: 8px; }
+.notice { margin: 10px 0; }
+.warning {
+  background: #f4ead3; border: 1px solid #b7a27a; border-left: 3px solid #8d6c39;
+  padding: 12px; color: #53432b; line-height: 1.5;
+}
+.warning strong, #storageNotice button { display: block; }
+
+button, summary { cursor: pointer; }
+button:disabled { cursor: default; opacity: .55; }
+:focus-visible { outline: 2px solid var(--ink-green); outline-offset: 3px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+.grid > div:not([hidden]) { display: flex; flex-direction: column; align-items: stretch; }
+.grid > div > :is(input, select) { margin-top: auto; }
+.full { grid-column: 1 / -1; }
+label { display: block; margin-bottom: 5px; color: var(--muted-ink); font-size: .83rem; font-weight: 650; }
+input, select, textarea {
+  width: 100%; min-width: 0; padding: 10px; font: inherit; color: inherit;
+  background: var(--control); border: 1px solid var(--rule); border-radius: var(--radius);
+}
+input, select { min-height: 44px; }
+.primary {
+  min-height: 44px; max-width: 100%; margin-top: 13px; padding: 10px 15px; border: 0;
+  border-radius: var(--radius); background: var(--ink-green); color: var(--paper);
+  font: inherit; font-weight: 750;
+}
+.link {
+  min-height: 44px; padding: 8px 0; border: 0;
+  background: transparent; color: var(--ink-green); font: inherit; font-weight: 700;
+}
+.danger { color: var(--danger); }
+.edit, .dialog-close, .arrow, .mrow button, .ledger-filter {
+  min-height: 44px; padding: 6px 10px; border: 1px solid var(--rule);
+  border-radius: var(--radius); background: transparent; color: var(--ink-green); font: inherit;
+}
+.actions { display: flex; flex-wrap: wrap; gap: 0 15px; }
+.mrow { display: flex; gap: 8px; margin: 7px 0; }
+#catList { display: grid; gap: 8px; margin-bottom: 20px; }
+#catList .mrow { margin: 0; align-items: center; }
+#catList .mrow button { min-width: 44px; color: var(--danger); }
+.manager { display: none; }
+.manager.open { display: block; }
+.budget-note, .comparison-help, .catHelp, footer {
+  color: var(--muted-ink); font-size: .83rem; line-height: 1.55;
+}
+.empty { color: var(--muted-ink); text-align: center; padding: 16px; }
+#toast {
+  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: none;
+  max-width: 90vw; padding: 12px; border-radius: var(--radius);
+  background: var(--ink-green); color: var(--paper); font-size: .83rem;
+}
+body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+input, textarea, select, [contenteditable="true"] {
+  -webkit-user-select: text; user-select: text; -webkit-touch-callout: default;
+}
+
+.period-bar {
+  display: grid; grid-template-columns: minmax(0, min(42%, 9.5rem)) minmax(0, 1fr);
+  align-items: center; gap: 6px; margin: 10px 6px 0;
+}
+.period-bar[hidden] { display: none; }
+.period-bar select { padding: 6px; font-size: .8rem; }
+.month { display: flex; align-items: center; justify-content: space-between; gap: 3px; }
+.month strong { min-width: 0; text-transform: capitalize; text-align: center; font-size: .8rem; overflow-wrap: anywhere; }
+.arrow { width: 36px; padding: 0; flex: none; font-size: 1.5rem; }
+
+.ledger-label, .ledger-day {
+  font-family: inherit; font-size: .72rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-green);
+}
+.ledger-balance, .budget-value, .month-breakdown-total {
+  font: clamp(2.75rem, 14vw, 4.5rem)/1.08 var(--serif); letter-spacing: -.045em;
+  color: var(--ink-green); margin: 3px 0 6px; overflow-wrap: anywhere;
+}
+.ledger-balance.unavailable, .budget-value.unavailable { font-size: 2rem; letter-spacing: normal; }
+.ledger-cycle, .ledger-total { color: var(--muted-ink); font-size: .83rem; line-height: 1.4; margin: 4px 0; }
+.ledger-total strong { color: var(--ink); }
+.ledger-journal { border-top: 2px solid var(--ink-green); margin-top: 24px; }
+.ledger-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; }
+.ledger-heading h2 { margin: 0; }
+.ledger-title { display: flex; align-items: center; gap: 2px; }
+.history-toggle {
+  display: grid; place-items: center; width: 38px; height: 44px; padding: 0;
+  border: 0; background: transparent; color: var(--ink-green);
+}
+.history-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.ledger-filter { font-size: .82rem; font-weight: 700; }
+.ledger-filter::after { content: ' ▾'; }
+.ledger-filter[aria-expanded="true"]::after { content: ' ▴'; }
+#ledgerPeriodSlot .period-bar { margin: 0 0 8px; }
+.ledger-columns { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0 8px; color: var(--muted-ink); }
+.ledger-day { border-top: 1px solid var(--rule); padding: 9px 0 3px; margin: 0; }
+.ledger-group { margin-bottom: 10px; }
+.entry + .entry { border-top: 1px solid var(--fine-rule); }
+.entry .edit {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  text-align: left; width: 100%; min-height: 48px; padding: 6px 0; border: 0; border-radius: 0; color: inherit;
+}
+.entry .info { min-width: 0; overflow-wrap: anywhere; }
+.entry small { display: block; color: var(--muted-ink); }
+.ledger-amount { flex: none; text-align: right; font: 600 .86rem var(--figures); }
+.ledger-categories { border-top: 1px solid var(--rule); margin-top: 18px; padding-top: 10px; }
+.ledger-categories > summary, .budget-details > summary, .danger-zone > summary {
+  min-height: 44px; padding: 10px 0; font-weight: 700; color: var(--ink-green);
+}
+#ledgerFormSlot:not(:empty) { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.inline-form-host:not(:empty) { margin: 0 0 16px; padding: 10px 0 10px 12px; border-left: 2px solid var(--rule); }
+.inline-context { margin-bottom: 10px; color: var(--ink-green); font-size: .83rem; font-weight: 700; }
+.cat-action { padding: 8px 0 12px; cursor: pointer; touch-action: manipulation; }
+.cat-action:hover, .entry .edit:hover, .arrow:hover, .ledger-filter:hover, .dialog-close:hover, .edit:hover {
+  background: var(--wash);
+}
+.cathead { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 5px; overflow-wrap: anywhere; }
+.cathead strong { font-family: var(--figures); flex: none; }
+.track { height: 6px; background: var(--wash); overflow: hidden; }
+.bar { height: 100%; }
+
+.budget-heading, .wealth-summary h2 { margin: 0; }
+.budget-details + .budget-details { border-top: 1px solid var(--fine-rule); }
+#receiveSalary { margin-top: 0; }
+#budgetSettings .grid { margin-top: 12px; }
+.salary-row {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 0 10px; padding: 8px 0; border-top: 1px solid var(--fine-rule);
+}
+.salary-row span { flex: 1 1 9rem; }
+.months { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 12px; }
+.months > button {
+  min-width: 0; min-height: 60px; padding: 8px 0; border: 0;
+  border-top: 1px solid var(--fine-rule); background: transparent; text-align: left; color: inherit; font: inherit;
+}
+.months > button:hover { background: var(--wash); }
+.months :is(small, strong) { display: block; }
+.months small { color: var(--muted-ink); }
+.months strong { margin-top: 4px; overflow-wrap: anywhere; font-family: var(--figures); font-size: .9rem; }
+
+.wealth-summary { padding-bottom: 16px; }
+.wealth-totals { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 18px; margin: 12px 0 0; }
+.wealth-totals dt { font-size: .83rem; color: var(--muted-ink); }
+.wealth-totals dd { margin: 3px 0 0; font-family: var(--figures); font-weight: 650; }
+#portfolioForm h2:not(:first-child) { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--fine-rule); }
+.goals-card > summary { min-height: 44px; font: 1.85rem/1.12 var(--serif); color: var(--ink-green); }
+.goal { min-width: 0; margin: 16px 0; padding: 12px 0 0; border: 0; border-top: 1px solid var(--fine-rule); }
+.goal legend { padding: 0 8px 0 0; font-weight: 750; }
+.goal progress { width: 100%; height: 8px; accent-color: var(--ink-green); }
+.goal p { margin: 6px 0; }
+.settings-actions { display: grid; }
+.settings-actions .link { text-align: left; border-top: 1px solid var(--fine-rule); }
+.danger-zone { border-top: 1px solid var(--fine-rule); margin-top: 12px; }
+.danger-zone p { font-size: .83rem; color: var(--muted-ink); line-height: 1.55; }
+#shareApp { font-size: .875rem; font-weight: 500; }
+
+.month-dialog {
+  width: min(calc(100% - 30px), 480px); max-height: 85vh; overflow: auto; padding: 20px;
+  border: 1px solid var(--rule); border-top: 3px solid var(--ink-green); border-radius: var(--radius);
+  background: var(--paper); color: var(--ink);
+}
+.salary-dialog { width: min(calc(100% - 30px), 520px); }
+.month-dialog::backdrop { background: #202921a0; }
+.dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dialog-head h2 { margin: 0; text-transform: capitalize; }
+.salary-dialog .grid { margin-top: 16px; }
+.month-breakdown-total { font-size: 1.85rem; margin: 16px 0; }
+.month-pie { display: block; width: min(100%, 220px); height: auto; margin: 0 auto 20px; }
+.pie-legend { list-style: none; padding: 0; margin: 0; }
+.pie-legend li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--fine-rule); }
+.pie-swatch { width: 13px; height: 13px; border-radius: 2px; flex: none; }
+.pie-name { flex: 1; overflow-wrap: anywhere; min-width: 0; }
+.pie-values { text-align: right; flex: none; font-family: var(--figures); }
+.pie-values small { display: block; color: var(--muted-ink); margin-top: 3px; }
+.analysis-report { margin-top: 14px; }
+.analysis-report textarea { min-height: 160px; resize: vertical; }
+
+@media (min-width: 570px) {
+  .months { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+</style></head><body><main class="wrap"><header><h1>Mes dépenses</h1><span>Hors ligne</span></header>
+<div id="updateNotice" class="notice" hidden><button type="button" id="reloadApp" class="link">Recharger pour appliquer la mise à jour</button></div>
+<div id="storageNotice" class="notice warning" role="alert" hidden></div>
 
 <nav class="app-nav" aria-label="Rubriques">
   <button type="button" aria-controls="expensesView" aria-pressed="true">Dépenses</button>
@@ -44,14 +236,32 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
   <button type="button" aria-controls="settingsView" aria-pressed="false">Réglages</button>
 </nav>
 <section id="periodPicker" class="period-bar" aria-label="Période affichée"><select id="periodMode" aria-label="Type de période"><option value="month">Mois calendaire</option><option value="cycle">Cycle de paie</option></select><div class="month"><button id="prev" class="arrow" aria-label="Mois précédent">‹</button><strong id="month"></strong><button id="next" class="arrow" aria-label="Mois suivant">›</button></div></section>
-<section id="expensesView" aria-label="Dépenses">
-<section class="card hero"><small id="totalLabel">Total du mois</small><div class="total" id="total"></div><div class="delta"><span id="deltaLabel">Par rapport au mois précédent</span><b id="delta"></b></div></section>
-<section class="card"><h2>Dépenses par catégorie</h2><div id="categories"></div></section>
-<section class="card"><div class="history-head"><h2 id="historyTitle">Historique du mois</h2><button type="button" id="historyToggle" class="history-toggle" aria-expanded="false" aria-controls="entries" aria-label="Replier l’historique du mois"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div id="entries" hidden></div></section>
-<form id="form" hidden><div id="formContext" class="inline-context"></div><div class="grid"><div><label for="amount">Montant (€)</label><input id="amount" inputmode="decimal" placeholder="" required></div><div><label for="date">Date</label><input type="date" id="date" required></div><div class="full"><label for="expenseKind">Nature budgétaire</label><select id="expenseKind"><option value="variable">Dépense variable</option><option value="fixed">Charge fixe déjà couverte par la réserve</option><option value="bitcoin">DCA Bitcoin</option><option value="savings">Versement d’épargne hors Bitcoin</option></select></div></div><button class="primary" id="submit">+ Ajouter la dépense</button><div class="actions"><button type="button" id="cancel" class="link" hidden>Annuler la modification</button><button type="button" id="delete" class="link danger" hidden>Supprimer cette dépense</button></div></form>
+<section id="expensesView" class="ledger-view" aria-label="Dépenses">
+<section aria-label="Budget disponible">
+  <div class="ledger-label">Budget disponible</div>
+  <p class="ledger-balance" id="ledgerBalance"></p>
+  <p class="ledger-cycle" id="ledgerCycle"></p>
+  <p class="ledger-total"><span id="totalLabel">Total du mois</span> · <strong id="total"></strong></p>
+  <p class="ledger-total" id="ledgerComparison" hidden><span id="deltaLabel"></span> · <strong id="delta"></strong></p>
+  <button type="button" class="primary" id="addExpense" aria-expanded="false" aria-controls="ledgerFormSlot">+ Dépense</button>
+  <div id="ledgerFormSlot"></div>
 </section>
-<section id="budgetView" aria-label="Budget" hidden>
-<section class="card"><button type="button" id="receiveSalary" class="primary" style="margin-top:0">J’ai reçu ma paie</button><p class="budget-note" id="salaryForecast"></p>
+<section class="ledger-journal" aria-labelledby="historyTitle">
+  <div class="ledger-heading">
+    <div class="ledger-title"><h2 id="historyTitle">Journal</h2><button type="button" id="historyToggle" class="history-toggle" aria-expanded="true" aria-controls="ledgerHistory" aria-label="Replier l’historique du mois"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    <button type="button" id="ledgerFilter" class="ledger-filter" aria-expanded="false" aria-controls="ledgerPeriodSlot">Afficher</button>
+  </div>
+  <div id="ledgerPeriodSlot" hidden></div>
+  <div id="ledgerHistory">
+    <div class="ledger-columns ledger-label" aria-hidden="true"><span>Opération</span><span>Montant</span></div>
+    <div id="entries"></div>
+  </div>
+</section>
+<details class="ledger-categories" id="ledgerCategories"><summary>Dépenses par catégorie</summary><div id="categories"></div></details>
+<form id="form" hidden><div id="formContext" class="inline-context"></div><div class="grid"><div class="full" id="ledgerCategoryField" hidden><label for="ledgerCategory">Catégorie</label><select id="ledgerCategory"></select></div><div><label for="amount">Montant (€)</label><input id="amount" inputmode="decimal" placeholder="" required></div><div><label for="date">Date</label><input type="date" id="date" required></div><div class="full"><label for="expenseKind">Nature budgétaire</label><select id="expenseKind"><option value="variable">Dépense variable</option><option value="fixed">Charge fixe déjà couverte par la réserve</option><option value="bitcoin">DCA Bitcoin</option><option value="savings">Versement d’épargne hors Bitcoin</option></select></div></div><button class="primary" id="submit">+ Ajouter la dépense</button><div class="actions"><button type="button" id="cancel" class="link" hidden>Annuler la modification</button><button type="button" id="delete" class="link danger" hidden>Supprimer cette dépense</button></div></form>
+</section>
+<section id="budgetView" class="ledger-view" aria-label="Budget" hidden>
+<section class="ruled-section"><button type="button" id="receiveSalary" class="primary">J’ai reçu ma paie</button><p class="budget-note" id="salaryForecast"></p>
 <details class="budget-details"><summary>Paies enregistrées et corrections</summary><div id="salaryList"></div></details>
 <details class="budget-details"><summary>Prévisions budgétaires</summary><form id="budgetSettings"><div class="grid">
 <div><label for="plannedIncome">Revenu moyen prévu (€)</label><input id="plannedIncome" inputmode="decimal" required></div><div><label for="plannedFixed">Charges fixes réservées (€)</label><input id="plannedFixed" inputmode="decimal" required></div>
@@ -60,19 +270,22 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
 <div><label for="expectedDay">Jour prévu de paie (1 à 28)</label><input id="expectedDay" type="number" min="1" max="28" required></div></div>
 <p class="budget-note">Ces prévisions s’appliquent aux nouvelles paies. Chaque cycle conserve ses paramètres. Les charges fixes sont suivies séparément ; les réserves ne prouvent pas un paiement.</p>
 <button type="submit" class="link">Enregistrer les prévisions</button></form></details></section>
-<section class="card" id="cycleBudget" hidden><h2>Budget variable du cycle</h2><div id="budgetContent"></div></section>
+<section class="ruled-section" id="cycleBudget" hidden><h2 class="ledger-label budget-heading">Budget variable du cycle</h2><div id="budgetContent"></div></section>
 </section>
-<section id="analysisView" aria-label="Analyses" hidden>
-<section class="card"><button type="button" id="analyzeCurrent" class="link">Analyser la période affichée</button><p class="budget-note" id="periodNote"></p></section>
-<section class="card"><h2>Évolution sur 6 mois calendaires</h2><div id="comparison" class="compare"></div><p class="comparison-help">Touche un mois pour voir ses dépenses par catégorie.</p></section>
+<section id="analysisView" class="ledger-view" aria-label="Analyses" hidden>
+<section class="ruled-section"><button type="button" id="analyzeCurrent" class="link">Analyser la période affichée</button><p class="budget-note" id="periodNote"></p></section>
+<section class="ruled-section"><h2>Évolution sur 6 mois calendaires</h2><div id="comparison" class="months"></div><p class="comparison-help">Touche un mois pour voir ses dépenses par catégorie.</p></section>
 </section>
-<section id="portfolioView" aria-label="Patrimoine" hidden>
-  <div class="card hero">
-    <small>Patrimoine net renseigné</small>
-    <div id="portfolioNet" class="total">—</div>
-    <div class="delta"><span>Actifs renseignés <b id="portfolioAssets">—</b></span><span>Capital restant dû <b id="portfolioDebt">—</b></span></div>
-  </div>
-  <form id="portfolioForm" class="card">
+<section id="portfolioView" class="ledger-view" aria-label="Patrimoine" hidden>
+  <section class="wealth-summary" aria-labelledby="wealthTitle">
+    <h2 id="wealthTitle" class="ledger-label">Patrimoine net renseigné</h2>
+    <p id="portfolioNet" class="ledger-balance">—</p>
+    <dl class="wealth-totals">
+      <div><dt>Actifs renseignés</dt><dd id="portfolioAssets">—</dd></div>
+      <div><dt>Capital restant dû</dt><dd id="portfolioDebt">—</dd></div>
+    </dl>
+  </section>
+  <form id="portfolioForm" class="ruled-section">
     <h2>Actifs</h2>
     <div class="grid">
       <div><label for="portfolio-checking">Compte courant (€)</label><input id="portfolio-checking" name="checking" inputmode="decimal"></div>
@@ -82,7 +295,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
       <div><label for="portfolio-bitstack">Participation Bitstack (€)</label><input id="portfolio-bitstack" name="bitstack" inputmode="decimal"></div>
       <div><label for="portfolio-property">Valeur estimée du logement (€)</label><input id="portfolio-property" name="property" inputmode="decimal"></div>
     </div>
-    <h2 style="margin-top:20px">Crédit immobilier</h2>
+    <h2>Crédit immobilier</h2>
     <p class="budget-note">Saisis 0 pour un prêt inexistant ou soldé. Une case vide indique un montant inconnu.</p>
     <div class="grid">
       <div><label for="portfolio-balance1">Restant dû · Prêt 1 (€)</label><input id="portfolio-balance1" name="balance1" inputmode="decimal"></div>
@@ -95,7 +308,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
     <p id="portfolioPayments" class="budget-note"></p>
     <button type="submit" class="primary">Enregistrer le patrimoine</button>
   </form>
-  <details id="goalsPanel" class="card goals-card">
+  <details id="goalsPanel" class="ruled-section goals-card">
     <summary>Objectifs</summary>
     <p class="budget-note">Indique la part de ton épargne réservée à chaque objectif. Elle est déjà comprise dans tes actifs.</p>
     <form id="goalsForm">
@@ -105,15 +318,16 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
     </form>
   </details>
 </section>
-<section id="settingsView" aria-label="Réglages" hidden>
-<section class="card"><button class="link" id="manage">Gérer les catégories</button><div id="manager" class="manager"><p class="catHelp">Renomme ou supprime les catégories ci-dessous. Les dépenses existantes seront conservées.</p><div id="catList"></div><label for="newCat">Nouvelle catégorie</label><div class="mrow"><input id="newCat" maxlength="30" placeholder="Ex. Santé"><button id="addCat" type="button">Ajouter</button></div></div><div class="actions"><button class="link" id="export" type="button">Exporter mes données</button><button class="link" id="import" type="button">Importer une sauvegarde</button><button class="link" id="recovery" type="button">Récupérer une copie de sécurité</button><input id="file" type="file" accept=".json,application/json" hidden></div><details class="danger-zone"><summary>Options avancées</summary><p>Cette action efface les données actives. Exporte une sauvegarde avant de continuer ; les copies locales de récupération sont conservées.</p><button class="link danger" id="reset" type="button">Effacer les données actives</button></details></section>
+<section id="settingsView" class="ledger-view" aria-label="Réglages" hidden>
+<section class="ruled-section"><h2>Catégories</h2><button class="link" id="manage" aria-expanded="false" aria-controls="manager">Gérer les catégories</button><div id="manager" class="manager"><p class="catHelp">Renomme ou supprime les catégories ci-dessous. Les dépenses existantes seront conservées.</p><div id="catList"></div><label for="newCat">Nouvelle catégorie</label><div class="mrow"><input id="newCat" maxlength="30" placeholder="Ex. Santé"><button id="addCat" type="button">Ajouter</button></div></div></section>
+<section class="ruled-section"><h2>Sauvegardes</h2><div class="settings-actions"><button class="link" id="export" type="button">Exporter mes données</button><button class="link" id="import" type="button">Importer une sauvegarde</button><button class="link" id="recovery" type="button">Récupérer une copie de sécurité</button><input id="file" type="file" accept=".json,application/json" hidden></div><details class="danger-zone"><summary>Options avancées</summary><p>Cette action efface les données actives. Exporte une sauvegarde avant de continuer ; les copies locales de récupération sont conservées.</p><button class="link danger" id="reset" type="button">Effacer les données actives</button></details></section>
 <footer>Les données restent sur cet appareil, sans compte ni serveur. Exporte régulièrement une sauvegarde : effacer les données du navigateur peut les supprimer.
-<div><button class="link" id="shareApp" type="button" style="font-size:.875rem;min-height:44px;color:#526177;font-weight:500">Partager l’application</button></div>
+<div><button class="link" id="shareApp" type="button">Partager l’application</button></div>
 </footer>
 </section>
 </main><div id="toast" role="status"></div>
 <dialog id="salaryDialog" class="month-dialog salary-dialog" aria-labelledby="salaryTitle"><div class="dialog-head"><h2 id="salaryTitle">J’ai reçu ma paie</h2><button type="button" id="closeSalary" class="dialog-close">Fermer</button></div>
-<form id="salaryForm"><div class="grid" style="margin-top:16px"><div><label for="salaryDate">Date réelle de réception</label><input id="salaryDate" type="date" required></div><div><label for="salaryNet">Montant net effectivement reçu (€)</label><input id="salaryNet" inputmode="decimal" required placeholder="Montant réel obligatoire"></div></div>
+<form id="salaryForm"><div class="grid"><div><label for="salaryDate">Date réelle de réception</label><input id="salaryDate" type="date" required></div><div><label for="salaryNet">Montant net effectivement reçu (€)</label><input id="salaryNet" inputmode="decimal" required placeholder="Montant réel obligatoire"></div></div>
 <p class="budget-note" id="salaryImpact"></p><p class="budget-note">Le revenu moyen configuré est uniquement une prévision. Une confirmation démarre un cycle ; aucune dépense historique n’est modifiée.</p><p id="salaryError" class="warning" hidden role="alert"></p>
 <button id="confirmSalary" class="primary" type="submit">Confirmer la réception</button></form></dialog>
 <dialog id="monthDialog" class="month-dialog" aria-labelledby="monthDialogTitle"><div class="dialog-head"><h2 id="monthDialogTitle"></h2><button type="button" id="closeMonthDialog" class="dialog-close" autofocus>Fermer</button></div><p id="monthBreakdownTotal" class="month-breakdown-total"></p><div id="monthBreakdown"></div>
@@ -129,6 +343,9 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
   const navigation = document.querySelector('.app-nav');
   const buttons = [...navigation.querySelectorAll('button')];
   const periodPicker = document.getElementById('periodPicker');
+  const periodSlot = document.getElementById('ledgerPeriodSlot');
+  const returnPoint = periodPicker.previousElementSibling;
+  periodSlot.append(periodPicker);
   for (const button of buttons) {
     button.addEventListener('click', () => {
       for (const item of buttons) {
@@ -136,7 +353,10 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
         item.setAttribute('aria-pressed', String(active));
         document.getElementById(item.getAttribute('aria-controls')).hidden = !active;
       }
-      periodPicker.hidden = ['settingsView','portfolioView'].includes(button.getAttribute('aria-controls'));
+      const activeView = button.getAttribute('aria-controls');
+      if (activeView === 'expensesView') periodSlot.append(periodPicker);
+      else returnPoint.after(periodPicker);
+      periodPicker.hidden = ['settingsView','portfolioView'].includes(activeView);
     });
   }
 }
@@ -144,18 +364,31 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,
 <script src="./budget.js"></script>
 <script>
 (()=>{'use strict';
-const $=id=>document.getElementById(id),defaults=['Bouffe','Tabac','Essence','Factures','Loisirs','Autres'],colors=['#159a8e','#e29a55','#607dd2','#b785c5','#da727e','#84a46b'];
+const $=id=>document.getElementById(id),defaults=['Bouffe','Tabac','Essence','Factures','Loisirs','Autres'],colors=['#35604a','#a36536','#4c6481','#825773','#a24b44','#687a3e'];
 const today=new Date(),local=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-'),key=d=>local(d).slice(0,7),fmt=v=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(v),month=d=>new Intl.DateTimeFormat('fr-FR',{month:'long',year:'numeric'}).format(d);
 let store,loaded;
 try{store=Budget.createStore(localStorage);loaded=store.load(defaults)}catch(error){loaded={data:null,error:'Stockage inaccessible : '+error.message}}
 let data=loaded.data||Budget.validate({categories:[...defaults],expenses:[]});
 let mode='month',cycleId=data.paydays.at(-1)?.id||null,salaryEditing=null;
 if(!data.categories.includes(data.defaultCategory))data.defaultCategory=data.categories[0];
-let view=new Date(today.getFullYear(),today.getMonth(),1),editing=null,historyExpanded=false,formExpanded=false,selectedCategory=null;
+let view=new Date(today.getFullYear(),today.getMonth(),1),editing=null,historyExpanded=true,formExpanded=false,selectedCategory=null;
 function setFormExpanded(expanded){const form=$('form');formExpanded=expanded;form.hidden=!expanded;if(!expanded){selectedCategory=null;document.body.append(form)}}
 function addToCategory(category){if(formExpanded&&selectedCategory===category&&editing===null){setFormExpanded(false);render();return}clearForm();selectedCategory=category;formExpanded=true;render();const host=document.querySelector('[data-form-category="'+CSS.escape(category)+'"]');if(host){host.append($('form'));$('form').hidden=false;$('formContext').textContent='Nouvelle dépense · '+category;host.scrollIntoView({behavior:'smooth',block:'nearest'})}}
-function updateHistoryVisibility(){const button=$('historyToggle');$('entries').hidden=!historyExpanded;button.setAttribute('aria-expanded',String(historyExpanded));button.setAttribute('aria-label',(historyExpanded?'Replier':'Déplier')+' l’historique '+(mode==='cycle'?'du cycle':'du mois'))}
+function updateHistoryVisibility(){const button=$('historyToggle');$('ledgerHistory').hidden=!historyExpanded;button.setAttribute('aria-expanded',String(historyExpanded));button.setAttribute('aria-label',(historyExpanded?'Replier':'Déplier')+' l’historique '+(mode==='cycle'?'du cycle':'du mois'))}
 $('historyToggle').onclick=()=>{historyExpanded=!historyExpanded;updateHistoryVisibility()};
+$('ledgerFilter').onclick=()=>{
+  const slot=$('ledgerPeriodSlot');
+  slot.hidden=!slot.hidden;
+  $('ledgerFilter').setAttribute('aria-expanded',String(!slot.hidden));
+};
+$('addExpense').onclick=()=>{
+  const open=!(formExpanded&&selectedCategory===null);
+  clearForm();
+  selectedCategory=null;
+  formExpanded=open;
+  render();
+  if(open)$('ledgerCategory').focus();
+};
 function save(replace=false){try{if(!store)throw Error('Stockage indisponible.');data=store.commit(data,{replace});loaded.error=null;renderStorageNotice();return true}catch(error){data=store?.snapshot()||Budget.validate({categories:[...defaults],expenses:[]});notify('Enregistrement impossible : '+error.message);render();return false}}
 function notify(s){$('toast').textContent=s;$('toast').style.display='block';clearTimeout(notify.t);notify.t=setTimeout(()=>$('toast').style.display='none',2800)}
 $('shareApp').onclick=async()=>{
@@ -181,9 +414,75 @@ $('shareApp').onclick=async()=>{
 const rows=k=>data.expenses.filter(x=>x.date.slice(0,7)===k),sum=arr=>Budget.total(arr)/100;
 function render(){const period=activePeriod();let cur=period?Budget.select(data.expenses,period.start,period.end):[],total=sum(cur);$('month').textContent=period?periodTitle(period):'Aucune paie confirmée';$('total').textContent=fmt(total);renderBudget(period);
 
-let root=$('categories');const inlineForm=$('form');if(inlineForm){if(!formExpanded)inlineForm.hidden=true;if(inlineForm.parentElement!==document.body)document.body.append(inlineForm)}root.replaceChildren();let cats=data.categories.map((name,i)=>({name,i,amount:sum(cur.filter(e=>e.category===name))})).sort((a,b)=>b.amount-a.amount);if(!cats.length)root.append(empty('Aucune dépense pour ce mois.'));for(let c of cats){let div=document.createElement('div');div.className='cat';let head=document.createElement('div');head.className='cathead';let name=document.createElement('span');name.textContent='● '+c.name;name.style.color=colors[c.i%colors.length];let val=document.createElement('strong');val.textContent=fmt(c.amount);head.append(name,val);let bar=document.createElement('div');bar.className='track';let fill=document.createElement('div');fill.className='bar';fill.style.width=(total?100*c.amount/total:0)+'%';fill.style.background=colors[c.i%colors.length];bar.append(fill);div.append(head,bar);let host=document.createElement('div');host.className='inline-form-host';host.dataset.formCategory=c.name;div.classList.add('cat-action');div.tabIndex=0;div.setAttribute('role','button');div.setAttribute('aria-label','Ajouter une dépense dans '+c.name);div.onclick=()=>addToCategory(c.name);div.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();addToCategory(c.name)}};root.append(div);root.append(host);if(formExpanded&&selectedCategory===c.name){host.append($('form'));$('form').hidden=false;$('formContext').textContent=(editing?'Modifier':'Nouvelle dépense')+' · '+c.name}}
+let root=$('categories');const inlineForm=$('form');inlineForm.hidden=true;if(inlineForm.parentElement!==document.body)document.body.append(inlineForm);root.replaceChildren();let cats=data.categories.map((name,i)=>({name,i,amount:sum(cur.filter(e=>e.category===name))})).sort((a,b)=>b.amount-a.amount);if(!cats.length)root.append(empty('Aucune dépense pour ce mois.'));for(let c of cats){let div=document.createElement('div');div.className='cat';let head=document.createElement('div');head.className='cathead';let name=document.createElement('span');name.textContent=c.name;let val=document.createElement('strong');val.textContent=fmt(c.amount);head.append(name,val);let bar=document.createElement('div');bar.className='track';let fill=document.createElement('div');fill.className='bar';fill.style.width=(total?100*c.amount/total:0)+'%';fill.style.background=colors[c.i%colors.length];bar.append(fill);div.append(head,bar);let host=document.createElement('div');host.className='inline-form-host';host.dataset.formCategory=c.name;div.classList.add('cat-action');div.tabIndex=0;div.setAttribute('role','button');div.setAttribute('aria-label','Ajouter une dépense dans '+c.name);div.onclick=()=>addToCategory(c.name);div.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();addToCategory(c.name)}};root.append(div);root.append(host);if(formExpanded&&selectedCategory===c.name){host.append($('form'));$('form').hidden=false;$('formContext').textContent=(editing?'Modifier':'Nouvelle dépense')+' · '+c.name}}
 root=$('comparison');root.replaceChildren();const chartAnchor=mode==='cycle'&&period?new Date((period.end?Budget.addDays(period.end,-1):Budget.localToday())+'T12:00:00'):view;for(let i=5;i>=0;i--){let d=new Date(chartAnchor.getFullYear(),chartAnchor.getMonth()-i,1),button=document.createElement('button'),label=document.createElement('small'),value=document.createElement('strong');button.type='button';label.textContent=new Intl.DateTimeFormat('fr-FR',{month:'short',year:'2-digit'}).format(d);value.textContent=fmt(sum(rows(key(d))));button.setAttribute('aria-label','Voir les dépenses par catégorie de '+month(d));button.setAttribute('aria-haspopup','dialog');button.onclick=()=>showMonthBreakdown(d);button.append(label,value);root.append(button)}
-root=$('entries');root.replaceChildren();updateHistoryVisibility();if(!cur.length)root.append(empty('Aucune dépense enregistrée.'));for(let e of [...cur].sort((a,b)=>b.date.localeCompare(a.date)||b.created-a.created)){let row=document.createElement('div');row.className='entry';let info=document.createElement('div');info.className='info';let title=document.createElement('b');title.textContent=e.description||e.category;let sub=document.createElement('small');sub.textContent=e.category+' · '+new Intl.DateTimeFormat('fr-FR').format(new Date(e.date+'T12:00:00'));info.append(title,document.createElement('br'),sub);let amount=document.createElement('strong');amount.textContent=fmt(e.cents/100);let btn=document.createElement('button');btn.className='edit';btn.textContent='Modifier';btn.onclick=()=>edit(e.id);row.append(info,amount,btn);root.append(row)}renderManager();renderSalaries()}
+renderJournal(cur);
+const quickAdd=formExpanded&&selectedCategory===null;
+$('addExpense').setAttribute('aria-expanded',String(quickAdd));
+$('ledgerCategoryField').hidden=!quickAdd;
+if(quickAdd){
+  const select=$('ledgerCategory'), previous=select.value;
+  select.replaceChildren(...data.categories.map(category=>new Option(category,category)));
+  select.value=data.categories.includes(previous)?previous:data.defaultCategory;
+  $('ledgerFormSlot').append(inlineForm);
+  inlineForm.hidden=false;
+}
+renderManager();renderSalaries()}
+const ledgerDayFormat=new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const ledgerRangeFormat=new Intl.DateTimeFormat('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+const ledgerAmountFormat=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
+function renderJournal(expenses){
+  const root=$('entries');
+  root.replaceChildren();
+  updateHistoryVisibility();
+  if(!expenses.length)root.append(empty('Aucune dépense enregistrée.'));
+  let day, group;
+  for(const expense of [...expenses].sort((a,b)=>b.date.localeCompare(a.date)||b.created-a.created)){
+    if(expense.date!==day){
+      day=expense.date;
+      group=document.createElement('div');
+      group.className='ledger-group';
+      const heading=document.createElement('h3'), date=document.createElement('time');
+      heading.className='ledger-day';
+      date.dateTime=day;
+      date.textContent=ledgerDayFormat.format(new Date(day+'T12:00:00'));
+      heading.append(date);
+      group.append(heading);
+      root.append(group);
+    }
+    const row=document.createElement('div'), button=document.createElement('button');
+    const info=document.createElement('span'), title=document.createElement('b');
+    const category=document.createElement('small'), amount=document.createElement('span');
+    row.className='entry';
+    button.type='button';
+    button.className='edit';
+    button.onclick=()=>edit(expense.id);
+    info.className='info';
+    title.textContent=expense.description||expense.category;
+    category.textContent=expense.category;
+    amount.className='ledger-amount';
+    amount.textContent=ledgerAmountFormat.format(-expense.cents/100).replace('-','−');
+    button.setAttribute('aria-label','Modifier '+title.textContent+' · '+amount.textContent+' · '+day);
+    info.append(title);
+    if(expense.description&&expense.description!==expense.category)info.append(category);
+    button.append(info,amount);
+    row.append(button);
+    group.append(row);
+  }
+}
+function renderLedgerBalance(cycle,budget){
+  const balance=$('ledgerBalance'), cycleLabel=$('ledgerCycle');
+  const available=budget?.remainingCents!=null;
+  balance.textContent=available?fmt(budget.remainingCents/100):'Indéterminé';
+  balance.classList.toggle('unavailable',!available);
+  if(!cycle){
+    cycleLabel.textContent='Confirme une paie dans Budget pour afficher le cycle.';
+    return;
+  }
+  const end=cycle.end||cycle.forecastEnd;
+  const range=ledgerRangeFormat.formatRange(new Date(cycle.start+'T12:00:00'),new Date(Budget.addDays(end,-1)+'T12:00:00'));
+  cycleLabel.textContent=(mode==='month'?'Dernier cycle de paie':'Cycle de paie')+' · '+range+(cycle.end?'':' · fin prévue');
+}
 function summarizeExpenses(expenses){return Budget.summarizeExpenses(expenses)}
 
 function buildAnalysis(date,current,period=Budget.monthPeriod(key(date))){return Budget.report(data,period,previousPeriod(period),Budget.localToday(),fmt)}
@@ -248,9 +547,9 @@ $('copyAnalysis').onclick=async()=>{
 };
 $('closeMonthDialog').onclick=()=>$('monthDialog').close();
 function empty(t){let el=document.createElement('div');el.className='empty';el.textContent=t;return el}
-function clearForm(){editing=null;$('form').reset();$('date').value=Budget.localToday();$('formContext').textContent='Nouvelle dépense';$('submit').textContent='+ Ajouter la dépense';$('cancel').hidden=true;$('delete').hidden=true}
-function edit(id){let e=data.expenses.find(x=>x.id===id);if(!e)return;clearForm();editing=id;selectedCategory=e.category;formExpanded=true;render();$('amount').value=(e.cents/100).toFixed(2).replace('.',',');$('date').value=e.date;$('expenseKind').value=e.kind||'variable';$('formContext').textContent='Modifier une dépense · '+e.category;$('submit').textContent='Enregistrer les modifications';$('cancel').hidden=false;$('delete').hidden=false;$('form').scrollIntoView({behavior:'smooth',block:'center'})}
-$('form').onsubmit=ev=>{ev.preventDefault();let raw=$('amount').value.trim().replace(/\s/g,'').replace(',','.');if(!/^\d+(\.\d{1,2})?$/.test(raw)){notify('Montant invalide.');return}let cents;try{cents=Budget.money(raw)}catch(error){notify(error.message);return}let date=$('date').value,category=selectedCategory;if(!Number.isSafeInteger(cents)||cents<=0||!Budget.validDate(date)||!data.categories.includes(category)){notify('Vérifie le montant, la date et la catégorie.');return}let old=data.expenses.find(x=>x.id===editing);let e={...old,kind:$('expenseKind').value,id:old?.id||crypto.randomUUID(),created:old?.created??Date.now(),cents,date,category,description:old?.description||''};if(old)Object.assign(old,e);else data.expenses.push(e);view=new Date(Number(date.slice(0,4)),Number(date.slice(5,7))-1,1);if(!save())return;if(mode==='cycle'){const found=Budget.cycles(data).find(p=>date>=p.start&&(!p.end||date<p.end));if(found)cycleId=found.id;else mode='month'}clearForm();formExpanded=false;selectedCategory=null;render();notify(old?'Dépense modifiée.':'Dépense ajoutée.')};
+function clearForm(){editing=null;$('form').reset();$('ledgerCategory').selectedIndex=-1;$('date').value=Budget.localToday();$('formContext').textContent='Nouvelle dépense';$('submit').textContent='+ Ajouter la dépense';$('cancel').hidden=true;$('delete').hidden=true}
+function edit(id){let e=data.expenses.find(x=>x.id===id);if(!e)return;clearForm();$('ledgerCategories').open=true;editing=id;selectedCategory=e.category;formExpanded=true;render();$('amount').value=(e.cents/100).toFixed(2).replace('.',',');$('date').value=e.date;$('expenseKind').value=e.kind||'variable';$('formContext').textContent='Modifier une dépense · '+e.category;$('submit').textContent='Enregistrer les modifications';$('cancel').hidden=false;$('delete').hidden=false;$('form').scrollIntoView({behavior:'smooth',block:'center'})}
+$('form').onsubmit=ev=>{ev.preventDefault();let raw=$('amount').value.trim().replace(/\s/g,'').replace(',','.');if(!/^\d+(\.\d{1,2})?$/.test(raw)){notify('Montant invalide.');return}let cents;try{cents=Budget.money(raw)}catch(error){notify(error.message);return}let date=$('date').value,category=selectedCategory??$('ledgerCategory').value;if(!Number.isSafeInteger(cents)||cents<=0||!Budget.validDate(date)||!data.categories.includes(category)){notify('Vérifie le montant, la date et la catégorie.');return}let old=data.expenses.find(x=>x.id===editing);let e={...old,kind:$('expenseKind').value,id:old?.id||crypto.randomUUID(),created:old?.created??Date.now(),cents,date,category,description:old?.description||''};if(old)Object.assign(old,e);else data.expenses.push(e);view=new Date(Number(date.slice(0,4)),Number(date.slice(5,7))-1,1);if(!save())return;if(mode==='cycle'){const found=Budget.cycles(data).find(p=>date>=p.start&&(!p.end||date<p.end));if(found)cycleId=found.id;else mode='month'}clearForm();formExpanded=false;selectedCategory=null;render();notify(old?'Dépense modifiée.':'Dépense ajoutée.')};
 $('cancel').onclick=()=>{clearForm();formExpanded=false;selectedCategory=null;render()};$('delete').onclick=()=>{if(editing&&confirm('Supprimer définitivement cette dépense ?')){data.expenses=data.expenses.filter(e=>e.id!==editing);if(!save())return;clearForm();formExpanded=false;selectedCategory=null;render();notify('Dépense supprimée.')}};
 $('prev').onclick=()=>navigatePeriod(-1);$('next').onclick=()=>navigatePeriod(1);
 $('manage').onclick=()=>{renderManager();$('manager').classList.toggle('open');$('manage').setAttribute('aria-expanded',String($('manager').classList.contains('open')))};
@@ -271,21 +570,27 @@ $('periodMode').onchange=()=>{mode=$('periodMode').value;if(!cycleId)cycleId=dat
 $('analyzeCurrent').onclick=()=>{const period=activePeriod();if(period)showMonthBreakdown(view,period)};
 function paragraph(root,text,className='budget-note'){const p=document.createElement('p');p.className=className;p.textContent=text;root.append(p);return p}
 function renderBudget(period){
-  $('periodMode').value=mode;$('historyTitle').textContent=mode==='month'?'Historique du mois':'Historique du cycle';
+  $('periodMode').value=mode;
   $('totalLabel').textContent=mode==='month'?'Total enregistré du mois':'Total enregistré du cycle';
   $('prev').setAttribute('aria-label',mode==='month'?'Mois précédent':'Cycle précédent');$('next').setAttribute('aria-label',mode==='month'?'Mois suivant':'Cycle suivant');
   const list=Budget.cycles(data),i=list.findIndex(p=>p.id===cycleId);$('prev').disabled=mode==='cycle'&&i<=0;$('next').disabled=mode==='cycle'&&i>=list.length-1;
+  const todayString=Budget.localToday(), ledgerCycle=mode==='month'?list.at(-1):period;
+  const ledgerBudget=ledgerCycle?Budget.budget(data,ledgerCycle,todayString):null;
+  renderLedgerBalance(ledgerCycle,ledgerBudget);
+  $('ledgerComparison').hidden=true;
   $('analyzeCurrent').disabled=!period;$('cycleBudget').hidden=!period||mode!=='cycle';
   if(!period){$('delta').textContent='—';$('deltaLabel').textContent='Comparaison indisponible';$('periodNote').textContent='Confirme une réception de paie pour commencer. Toutes les dépenses antérieures restent disponibles par mois calendaire.';return}
-  const todayString=Budget.localToday(),m=Budget.metrics(data,period,todayString),c=Budget.compare(data,period,previousPeriod(period),todayString);
+  const m=Budget.metrics(data,period,todayString),c=Budget.compare(data,period,previousPeriod(period),todayString);
+  $('ledgerComparison').hidden=!c||c.referenceEmpty;
   $('deltaLabel').textContent=c?'Sur les '+c.days+' premiers jours':'Comparaison indisponible';
   $('delta').textContent=c&&!c.referenceEmpty?(c.differenceCents>0?'+':'')+fmt(c.differenceCents/100):'Référence insuffisante';
-  $('delta').style.color=c&&!c.referenceEmpty?(c.differenceCents<0?'#9ce1c1':c.differenceCents>0?'#ffc1ab':'#fff'):'#fff';
+  $('delta').style.color=c&&!c.referenceEmpty?(c.differenceCents<0?'#234a38':c.differenceCents>0?'#8b412c':'#535d50'):'#535d50';
   $('periodNote').textContent=(m.complete?'Période terminée':'Période incomplète / ouverte')+' · '+m.elapsed+' jours observés au '+todayString+'. Complétude des saisies non vérifiée. '+(m.futureCents?'Le total comprend '+fmt(m.futureCents/100)+' datés après aujourd’hui, exclus du budget à date. ':'')+'Les anciennes dépenses sont traitées comme variables ; corrige leur nature si elles correspondent à une réserve.';
   if(mode!=='cycle')return;
-  const b=Budget.budget(data,period,todayString),root=$('budgetContent');root.replaceChildren();
+  const b=ledgerBudget,root=$('budgetContent');root.replaceChildren();
+  const available=paragraph(root,b.remainingCents===null?'Disponible indéterminé':fmt(b.remainingCents/100),'budget-value');
+  available.classList.toggle('unavailable',b.remainingCents===null);
   paragraph(root,'Salaire net confirmé : '+fmt(b.incomeCents/100));
-  paragraph(root,b.remainingCents===null?'Disponible indéterminé':fmt(b.remainingCents/100),'budget-value');
   paragraph(root,'Budget restant '+(b.estimated?'prévisionnel':'calculé')+' après dépenses variables enregistrées. Ce montant n’est pas un solde bancaire.');
   paragraph(root,'Dépenses variables réelles enregistrées : '+fmt(b.paid.variable/100)+'. Réserves retenues : charges '+fmt(b.reserved.fixed/100)+', épargne hors Bitcoin '+fmt(b.reserved.savings/100)+', Bitcoin '+fmt(b.reserved.bitcoin/100)+'.');
   paragraph(root,'Une saisie de charge, Bitcoin ou épargne consomme sa réserve ; seul un dépassement réduit encore le budget variable.');

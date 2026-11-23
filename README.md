@@ -53,7 +53,7 @@ L’effacement des données actives conserve les copies de récupération ; le m
 
 - `index.html` : interface existante étendue et gestion des interactions.
 - `budget.js` : dates civiles, centimes, cycles, rapports, validation et stockage ; aucun service externe ni dépendance d’exécution.
-- `sw.js` : cache v20 comprenant le moteur budgétaire. Le HTML et le module sont servis depuis la même version installée. Une mise à jour complète s’utilise après rechargement ; une installation incomplète conserve l’ancienne version.
+- `sw.js` : cache v29 comprenant le moteur budgétaire. Le HTML et le module sont servis depuis la même version installée. Une mise à jour complète s’utilise après rechargement ; une installation incomplète conserve l’ancienne version.
 - `tests/core.test.cjs` et `tests/offline.test.cjs` : tests Node.js sans dépendance.
 - `tests/browser.test.cjs` : scénarios Chromium avec Playwright, uniquement outil de développement, profils jetables et données fictives.
 
@@ -69,7 +69,7 @@ Tests navigateur, avec Playwright et son Chromium déjà disponibles dans l’en
 node --test tests/browser.test.cjs
 ```
 
-`BASELINE_DIR` peut désigner une copie intacte du commit `04fbc14ea3bd4c983efc3358d08d5a57cdbcecb7` pour tester la mise à jour v19 → v20. Sans ce dossier, ce scénario est explicitement ignoré. `FILE_MODE=1` permet les tests d’interface sur fichiers locaux lorsque le réseau loopback est interdit ; les deux scénarios de véritable service worker sont alors explicitement ignorés. `SCREENSHOT_DIR` permet de conserver les captures de contrôle.
+`BASELINE_DIR` peut désigner une copie du commit `edc12b5` pour tester la mise à jour v27 → v29. Sans ce dossier, ce scénario est explicitement ignoré. `FILE_MODE=1` permet les tests d’interface sur fichiers locaux lorsque le réseau loopback est interdit ; les deux scénarios de véritable service worker sont alors explicitement ignorés. `SCREENSHOT_DIR` permet de conserver les captures de contrôle.
 
 Les tests du cache en mémoire ne remplacent pas une validation réelle du service worker. Les scénarios Chromium restent disponibles pour une vérification ultérieure depuis un serveur local autorisé. Aucun déploiement n’est effectué par les tests.
 
