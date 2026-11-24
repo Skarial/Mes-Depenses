@@ -125,19 +125,21 @@ input, textarea, select, [contenteditable="true"] {
 .ledger-balance.unavailable, .budget-value.unavailable { font-size: 2rem; letter-spacing: normal; }
 .ledger-cycle, .ledger-total { color: var(--muted-ink); font-size: .83rem; line-height: 1.4; margin: 4px 0; }
 .ledger-total strong { color: var(--ink); }
-.ledger-journal { border-top: 2px solid var(--ink-green); margin-top: 24px; }
-.ledger-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; }
-.ledger-heading h2 { margin: 0; }
-.ledger-title { display: flex; align-items: center; gap: 2px; }
+.ledger-actions {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 13px 0 0;
+}
+#addExpense { margin: 0; }
+.ledger-journal { border-top: 1px solid var(--rule); margin-top: 18px; }
+.ledger-journal h2 { margin: 0; font: 700 1rem/1.4 system-ui, sans-serif; }
 .history-toggle {
-  display: grid; place-items: center; width: 38px; height: 44px; padding: 0;
-  border: 0; background: transparent; color: var(--ink-green);
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0;
+  border: 0; background: transparent; color: var(--ink-green); font: inherit;
 }
 .history-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
 .ledger-filter { font-size: .82rem; font-weight: 700; }
 .ledger-filter::after { content: ' ▾'; }
 .ledger-filter[aria-expanded="true"]::after { content: ' ▴'; }
-#ledgerPeriodSlot .period-bar { margin: 0 0 8px; }
+#ledgerPeriodSlot .period-bar { margin: 10px 0 8px; }
 .ledger-columns { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0 8px; color: var(--muted-ink); }
 .ledger-day { border-top: 1px solid var(--rule); padding: 9px 0 3px; margin: 0; }
 .ledger-group { margin-bottom: 10px; }
@@ -149,7 +151,8 @@ input, textarea, select, [contenteditable="true"] {
 .entry .info { min-width: 0; overflow-wrap: anywhere; }
 .entry small { display: block; color: var(--muted-ink); }
 .ledger-amount { flex: none; text-align: right; font: 600 .86rem var(--figures); }
-.ledger-categories { border-top: 1px solid var(--rule); margin-top: 18px; padding-top: 10px; }
+.ledger-categories { border-top: 2px solid var(--ink-green); margin-top: 24px; }
+.ledger-categories > summary h2 { display: inline; }
 .ledger-categories > summary, .budget-details > summary, .danger-zone > summary {
   min-height: 44px; padding: 10px 0; font-weight: 700; color: var(--ink-green);
 }
@@ -243,21 +246,24 @@ input, textarea, select, [contenteditable="true"] {
   <p class="ledger-cycle" id="ledgerCycle"></p>
   <p class="ledger-total"><span id="totalLabel">Total du mois</span> · <strong id="total"></strong></p>
   <p class="ledger-total" id="ledgerComparison" hidden><span id="deltaLabel"></span> · <strong id="delta"></strong></p>
-  <button type="button" class="primary" id="addExpense" aria-expanded="false" aria-controls="ledgerFormSlot">+ Dépense</button>
-  <div id="ledgerFormSlot"></div>
-</section>
-<section class="ledger-journal" aria-labelledby="historyTitle">
-  <div class="ledger-heading">
-    <div class="ledger-title"><h2 id="historyTitle">Journal</h2><button type="button" id="historyToggle" class="history-toggle" aria-expanded="true" aria-controls="ledgerHistory" aria-label="Replier l’historique du mois"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+  <div class="ledger-actions">
+    <button type="button" class="primary" id="addExpense" aria-expanded="false" aria-controls="ledgerFormSlot">+ Dépense</button>
     <button type="button" id="ledgerFilter" class="ledger-filter" aria-expanded="false" aria-controls="ledgerPeriodSlot">Afficher</button>
   </div>
   <div id="ledgerPeriodSlot" hidden></div>
-  <div id="ledgerHistory">
+  <div id="ledgerFormSlot"></div>
+</section>
+<details class="ledger-categories" id="ledgerCategories" open>
+  <summary><h2>Dépenses par catégorie</h2></summary>
+  <div id="categories"></div>
+</details>
+<section class="ledger-journal" aria-labelledby="historyTitle">
+  <h2 id="historyTitle"><button type="button" id="historyToggle" class="history-toggle" aria-expanded="false" aria-controls="ledgerHistory">Journal<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></h2>
+  <div id="ledgerHistory" hidden>
     <div class="ledger-columns ledger-label" aria-hidden="true"><span>Opération</span><span>Montant</span></div>
     <div id="entries"></div>
   </div>
 </section>
-<details class="ledger-categories" id="ledgerCategories"><summary>Dépenses par catégorie</summary><div id="categories"></div></details>
 <form id="form" hidden><div id="formContext" class="inline-context"></div><div class="grid"><div class="full" id="ledgerCategoryField" hidden><label for="ledgerCategory">Catégorie</label><select id="ledgerCategory"></select></div><div><label for="amount">Montant (€)</label><input id="amount" inputmode="decimal" placeholder="" required></div><div><label for="date">Date</label><input type="date" id="date" required></div><div class="full"><label for="expenseKind">Nature budgétaire</label><select id="expenseKind"><option value="variable">Dépense variable</option><option value="fixed">Charge fixe déjà couverte par la réserve</option><option value="bitcoin">DCA Bitcoin</option><option value="savings">Versement d’épargne hors Bitcoin</option></select></div></div><button class="primary" id="submit">+ Ajouter la dépense</button><div class="actions"><button type="button" id="cancel" class="link" hidden>Annuler la modification</button><button type="button" id="delete" class="link danger" hidden>Supprimer cette dépense</button></div></form>
 </section>
 <section id="budgetView" class="ledger-view" aria-label="Budget" hidden>
@@ -371,10 +377,10 @@ try{store=Budget.createStore(localStorage);loaded=store.load(defaults)}catch(err
 let data=loaded.data||Budget.validate({categories:[...defaults],expenses:[]});
 let mode='month',cycleId=data.paydays.at(-1)?.id||null,salaryEditing=null;
 if(!data.categories.includes(data.defaultCategory))data.defaultCategory=data.categories[0];
-let view=new Date(today.getFullYear(),today.getMonth(),1),editing=null,historyExpanded=true,formExpanded=false,selectedCategory=null;
+let view=new Date(today.getFullYear(),today.getMonth(),1),editing=null,historyExpanded=false,formExpanded=false,selectedCategory=null;
 function setFormExpanded(expanded){const form=$('form');formExpanded=expanded;form.hidden=!expanded;if(!expanded){selectedCategory=null;document.body.append(form)}}
 function addToCategory(category){if(formExpanded&&selectedCategory===category&&editing===null){setFormExpanded(false);render();return}clearForm();selectedCategory=category;formExpanded=true;render();const host=document.querySelector('[data-form-category="'+CSS.escape(category)+'"]');if(host){host.append($('form'));$('form').hidden=false;$('formContext').textContent='Nouvelle dépense · '+category;host.scrollIntoView({behavior:'smooth',block:'nearest'})}}
-function updateHistoryVisibility(){const button=$('historyToggle');$('ledgerHistory').hidden=!historyExpanded;button.setAttribute('aria-expanded',String(historyExpanded));button.setAttribute('aria-label',(historyExpanded?'Replier':'Déplier')+' l’historique '+(mode==='cycle'?'du cycle':'du mois'))}
+function updateHistoryVisibility(){const button=$('historyToggle');$('ledgerHistory').hidden=!historyExpanded;button.setAttribute('aria-expanded',String(historyExpanded))}
 $('historyToggle').onclick=()=>{historyExpanded=!historyExpanded;updateHistoryVisibility()};
 $('ledgerFilter').onclick=()=>{
   const slot=$('ledgerPeriodSlot');
