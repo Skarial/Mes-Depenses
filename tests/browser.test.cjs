@@ -37,6 +37,7 @@ async function controlled(page){await page.evaluate(async()=>{await navigator.se
 test('UI : migration, montant réel obligatoire, vue mensuelle, rapport et export',async()=>{
   const {context,page,errors}=await open();try{
     assert.equal(await page.locator('#total').textContent(),'30,00 €');
+    assert.equal(await page.locator('#periodMode').inputValue(),'month');
     assert.equal(await page.locator('#ledgerBalance').textContent(),'Indéterminé');
     assert.equal(await page.locator('#ledgerPeriodSlot').isVisible(),false);
     assert.equal(await page.locator('#categories').isVisible(),true);
@@ -117,15 +118,15 @@ test('UI : hors ligne, redémarrage, paie, dépense, rapport, export et import',
     await start(false);await context.addInitScript(({seed,key})=>{if(!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify(seed))},{seed:legacy,key:B.KEYS.legacy});await page.goto(url+'/');await controlled(page);await salary(page);const beforeClose=await saved(page);
     await context.close();context=null;
     await start(true);await page.goto(url+'/');await navigate(page,'Budget');await page.waitForSelector('#receiveSalary');assert.ok(await page.evaluate(()=>!!navigator.serviceWorker.controller));assert.deepEqual(await saved(page),beforeClose);
-    await salary(page,'2026-11-20','2250');await navigate(page,'Dépenses');await page.locator('#addExpense').click();await page.locator('#ledgerCategory').selectOption('Bouffe');await page.locator('#amount').fill('12,34');await page.locator('#submit').click();await page.reload();assert.equal((await saved(page)).expenses.length,4);await page.locator('#ledgerFilter').click();await page.locator('#periodMode').selectOption('cycle');await navigate(page,'Analyses');await page.locator('#analyzeCurrent').click();await page.locator('#analyzeMonth').click();assert.match(await page.locator('#analysisText').inputValue(),/12,34/);await page.locator('#closeMonthDialog').click();const exported=await download(page,'#export');await importJson(page,exported);assert.deepEqual((await saved(page)).expenses,exported.expenses);assert.deepEqual(errors,[]);
+    await salary(page,'2026-11-20','2250');await navigate(page,'Dépenses');await page.locator('#addExpense').click();await page.locator('#ledgerCategory').selectOption('Bouffe');await page.locator('#amount').fill('12,34');await page.locator('#submit').click();await page.reload();assert.equal((await saved(page)).expenses.length,4);await page.locator('#ledgerFilter').click();assert.equal(await page.locator('#periodMode').inputValue(),'cycle');assert.match(await page.locator('#month').textContent(),/^2026-11-20/);await navigate(page,'Analyses');await page.locator('#analyzeCurrent').click();await page.locator('#analyzeMonth').click();assert.match(await page.locator('#analysisText').inputValue(),/12,34/);await page.locator('#closeMonthDialog').click();const exported=await download(page,'#export');await importJson(page,exported);assert.deepEqual((await saved(page)).expenses,exported.expenses);assert.deepEqual(errors,[]);
   }finally{await context?.close();console.log('Profil synthétique de validation conservé : '+profile)}
 });
-test('UI : mise à jour v29 vers v30 puis réouverture hors ligne',{skip:!process.env.BASELINE_DIR||!!process.env.FILE_MODE,timeout:30000},async()=>{
+test('UI : mise à jour v30 vers v31 puis réouverture hors ligne',{skip:!process.env.BASELINE_DIR||!!process.env.FILE_MODE,timeout:30000},async()=>{
   upgrade=false;
   const {context,page,errors}=await open(legacy,'/upgrade/');
   try{
     await controlled(page);
-    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v29')),true);
+    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v30')),true);
     await salary(page);
     const beforeUpdate=await saved(page);
     upgrade=true;
@@ -140,8 +141,9 @@ test('UI : mise à jour v29 vers v30 puis réouverture hors ligne',{skip:!proces
     assert.equal(await page.locator('#addExpense').isVisible(),true);
     assert.equal(await page.locator('#categories').isVisible(),true);
     assert.equal(await page.locator('#ledgerHistory').isVisible(),false);
-    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v30')),true);
-    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v29')),false);
+    assert.equal(await page.locator('#periodMode').inputValue(),'cycle');
+    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v31')),true);
+    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v30')),false);
     assert.deepEqual(await saved(page),beforeUpdate);
     assert.deepEqual(errors,[]);
   }finally{await context.close();upgrade=true}
