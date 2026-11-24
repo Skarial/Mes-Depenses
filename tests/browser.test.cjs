@@ -39,6 +39,11 @@ test('UI : migration, montant réel obligatoire, vue mensuelle, rapport et expor
     assert.equal(await page.locator('#total').textContent(),'30,00 €');
     assert.equal(await page.locator('#ledgerBalance').textContent(),'Indéterminé');
     assert.equal(await page.locator('#ledgerPeriodSlot').isVisible(),false);
+    assert.equal(await page.locator('#categories').isVisible(),true);
+    assert.equal(await page.locator('#ledgerHistory').isVisible(),false);
+    assert.equal(await page.locator('#historyToggle').getAttribute('aria-expanded'),'false');
+    assert.equal(await page.evaluate(()=>Boolean(document.getElementById('ledgerCategories')
+      .compareDocumentPosition(document.getElementById('historyTitle')) & Node.DOCUMENT_POSITION_FOLLOWING)),true);
     assert.equal(await page.locator('#entries .ledger-day time').getAttribute('datetime'),'2026-11-01');
     await page.setViewportSize({width:320,height:740});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
@@ -71,8 +76,8 @@ test('UI : doublon rejeté, correction et annulation sans perte',async()=>{
   }finally{await context.close()}
 });
 test('UI : dépenses et catégories existantes, édition et suppression',async()=>{
-  const {context,page,errors}=await open();try{await page.locator('#ledgerCategories > summary').click();await page.getByRole('button',{name:'Ajouter une dépense dans Bouffe',exact:true}).click();await page.locator('#amount').fill('0,10');await page.locator('#date').fill('2026-11-20');await page.locator('#submit').click();assert.equal((await saved(page)).expenses.at(-1).cents,10);
-    await page.locator('#historyToggle').click();assert.equal(await page.locator('#entries').isVisible(),false);await page.locator('#historyToggle').click();await page.locator('#entries .edit').first().click();await page.locator('#amount').fill('0,20');await page.locator('#expenseKind').selectOption('bitcoin');await page.locator('#submit').click();assert.equal((await saved(page)).expenses.at(-1).kind,'bitcoin');
+  const {context,page,errors}=await open();try{await page.getByRole('button',{name:'Ajouter une dépense dans Bouffe',exact:true}).click();await page.locator('#amount').fill('0,10');await page.locator('#date').fill('2026-11-20');await page.locator('#submit').click();assert.equal((await saved(page)).expenses.at(-1).cents,10);
+    await page.locator('#historyToggle').click();assert.equal(await page.locator('#entries').isVisible(),true);await page.locator('#entries .edit').first().click();await page.locator('#amount').fill('0,20');await page.locator('#expenseKind').selectOption('bitcoin');await page.locator('#submit').click();assert.equal((await saved(page)).expenses.at(-1).kind,'bitcoin');
     await page.locator('#entries .edit').first().click();await page.locator('#delete').click();assert.deepEqual((await saved(page)).expenses,legacy.expenses);
     await navigate(page,'Réglages');await page.locator('#manage').click();await page.locator('#newCat').fill('Santé');await page.locator('#addCat').click();await page.getByLabel('Renommer Santé',{exact:true}).fill('Soins');await page.getByLabel('Renommer Santé',{exact:true}).press('Tab');assert.ok((await saved(page)).categories.includes('Soins'));await page.getByRole('button',{name:'Supprimer Factures',exact:true}).click();const result=await saved(page);assert.equal(result.expenses.length,3);assert.equal(result.expenses.find(e=>e.id==='old2').category,'Autres');assert.equal(result.expenses.find(e=>e.id==='old2').cents,2000);assert.deepEqual(errors,[]);
   }finally{await context.close()}
@@ -115,12 +120,12 @@ test('UI : hors ligne, redémarrage, paie, dépense, rapport, export et import',
     await salary(page,'2026-11-20','2250');await navigate(page,'Dépenses');await page.locator('#addExpense').click();await page.locator('#ledgerCategory').selectOption('Bouffe');await page.locator('#amount').fill('12,34');await page.locator('#submit').click();await page.reload();assert.equal((await saved(page)).expenses.length,4);await page.locator('#ledgerFilter').click();await page.locator('#periodMode').selectOption('cycle');await navigate(page,'Analyses');await page.locator('#analyzeCurrent').click();await page.locator('#analyzeMonth').click();assert.match(await page.locator('#analysisText').inputValue(),/12,34/);await page.locator('#closeMonthDialog').click();const exported=await download(page,'#export');await importJson(page,exported);assert.deepEqual((await saved(page)).expenses,exported.expenses);assert.deepEqual(errors,[]);
   }finally{await context?.close();console.log('Profil synthétique de validation conservé : '+profile)}
 });
-test('UI : mise à jour v27 vers v29 puis réouverture hors ligne',{skip:!process.env.BASELINE_DIR||!!process.env.FILE_MODE,timeout:30000},async()=>{
+test('UI : mise à jour v29 vers v30 puis réouverture hors ligne',{skip:!process.env.BASELINE_DIR||!!process.env.FILE_MODE,timeout:30000},async()=>{
   upgrade=false;
   const {context,page,errors}=await open(legacy,'/upgrade/');
   try{
     await controlled(page);
-    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v27')),true);
+    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v29')),true);
     await salary(page);
     const beforeUpdate=await saved(page);
     upgrade=true;
@@ -133,9 +138,10 @@ test('UI : mise à jour v27 vers v29 puis réouverture hors ligne',{skip:!proces
     await context.setOffline(true);
     await page.reload();
     assert.equal(await page.locator('#addExpense').isVisible(),true);
-    assert.equal(await page.locator('#portfolioView .wealth-summary').count(),1);
-    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v29')),true);
-    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v27')),false);
+    assert.equal(await page.locator('#categories').isVisible(),true);
+    assert.equal(await page.locator('#ledgerHistory').isVisible(),false);
+    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v30')),true);
+    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v29')),false);
     assert.deepEqual(await saved(page),beforeUpdate);
     assert.deepEqual(errors,[]);
   }finally{await context.close();upgrade=true}
