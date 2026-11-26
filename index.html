@@ -118,11 +118,10 @@ input, textarea, select, [contenteditable="true"] {
 .ledger-label, .ledger-day {
   font-family: inherit; font-size: .72rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-green);
 }
-.ledger-balance, .budget-value, .month-breakdown-total {
+.ledger-balance, .month-breakdown-total {
   font: clamp(2.75rem, 14vw, 4.5rem)/1.08 var(--serif); letter-spacing: -.045em;
   color: var(--ink-green); margin: 3px 0 6px; overflow-wrap: anywhere;
 }
-.ledger-balance.unavailable, .budget-value.unavailable { font-size: 2rem; letter-spacing: normal; }
 .ledger-cycle, .ledger-total { color: var(--muted-ink); font-size: .83rem; line-height: 1.4; margin: 4px 0; }
 .ledger-total strong { color: var(--ink); }
 .ledger-actions {
@@ -240,11 +239,10 @@ input, textarea, select, [contenteditable="true"] {
 </nav>
 <section id="periodPicker" class="period-bar" aria-label="Période affichée"><select id="periodMode" aria-label="Type de période"><option value="month">Mois calendaire</option><option value="cycle">Cycle de paie</option></select><div class="month"><button id="prev" class="arrow" aria-label="Mois précédent">‹</button><strong id="month"></strong><button id="next" class="arrow" aria-label="Mois suivant">›</button></div></section>
 <section id="expensesView" class="ledger-view" aria-label="Dépenses">
-<section aria-label="Budget disponible">
-  <div class="ledger-label">Budget disponible</div>
-  <p class="ledger-balance" id="ledgerBalance"></p>
+<section aria-labelledby="totalLabel">
+  <div class="ledger-label" id="totalLabel">Total enregistré du mois</div>
+  <p class="ledger-balance" id="total"></p>
   <p class="ledger-cycle" id="ledgerCycle"></p>
-  <p class="ledger-total"><span id="totalLabel">Total du mois</span> · <strong id="total"></strong></p>
   <p class="ledger-total" id="ledgerComparison" hidden><span id="deltaLabel"></span> · <strong id="delta"></strong></p>
   <div class="ledger-actions">
     <button type="button" class="primary" id="addExpense" aria-expanded="false" aria-controls="ledgerFormSlot">+ Dépense</button>
@@ -267,16 +265,16 @@ input, textarea, select, [contenteditable="true"] {
 <form id="form" hidden><div id="formContext" class="inline-context"></div><div class="grid"><div class="full" id="ledgerCategoryField" hidden><label for="ledgerCategory">Catégorie</label><select id="ledgerCategory"></select></div><div><label for="amount">Montant (€)</label><input id="amount" inputmode="decimal" placeholder="" required></div><div><label for="date">Date</label><input type="date" id="date" required></div><div class="full"><label for="expenseKind">Nature budgétaire</label><select id="expenseKind"><option value="variable">Dépense variable</option><option value="fixed">Charge fixe déjà couverte par la réserve</option><option value="bitcoin">DCA Bitcoin</option><option value="savings">Versement d’épargne hors Bitcoin</option></select></div></div><button class="primary" id="submit">+ Ajouter la dépense</button><div class="actions"><button type="button" id="cancel" class="link" hidden>Annuler la modification</button><button type="button" id="delete" class="link danger" hidden>Supprimer cette dépense</button></div></form>
 </section>
 <section id="budgetView" class="ledger-view" aria-label="Budget" hidden>
-<section class="ruled-section"><button type="button" id="receiveSalary" class="primary">J’ai reçu ma paie</button><p class="budget-note" id="salaryForecast"></p>
+<section class="ruled-section"><button type="button" id="receiveSalary" class="primary">Paie</button><p class="budget-note" id="salaryForecast"></p>
 <details class="budget-details"><summary>Paies enregistrées et corrections</summary><div id="salaryList"></div></details>
 <details class="budget-details"><summary>Prévisions budgétaires</summary><form id="budgetSettings"><div class="grid">
-<div><label for="plannedIncome">Revenu moyen prévu (€)</label><input id="plannedIncome" inputmode="decimal" required></div><div><label for="plannedFixed">Charges fixes réservées (€)</label><input id="plannedFixed" inputmode="decimal" required></div>
+<div><label for="plannedFixed">Charges fixes réservées (€)</label><input id="plannedFixed" inputmode="decimal" required></div>
 <div><label for="plannedSavings">Épargne hors Bitcoin (€)</label><input id="plannedSavings" inputmode="decimal" required></div><div><label for="plannedDca">DCA Bitcoin par semaine (€)</label><input id="plannedDca" inputmode="decimal" required></div>
 <div><label for="dcaWeekday">Jour du DCA</label><select id="dcaWeekday"><option value="">Non renseigné (estimation)</option><option value="1">Lundi</option><option value="2">Mardi</option><option value="3">Mercredi</option><option value="4">Jeudi</option><option value="5">Vendredi</option><option value="6">Samedi</option><option value="0">Dimanche</option></select></div>
 <div><label for="expectedDay">Jour prévu de paie (1 à 28)</label><input id="expectedDay" type="number" min="1" max="28" required></div></div>
 <p class="budget-note">Ces prévisions s’appliquent aux nouvelles paies. Chaque cycle conserve ses paramètres. Les charges fixes sont suivies séparément ; les réserves ne prouvent pas un paiement.</p>
 <button type="submit" class="link">Enregistrer les prévisions</button></form></details></section>
-<section class="ruled-section" id="cycleBudget" hidden><h2 class="ledger-label budget-heading">Budget variable du cycle</h2><div id="budgetContent"></div></section>
+<section class="ruled-section" id="cycleBudget" hidden><h2 class="ledger-label budget-heading">Dépenses et prévisions du cycle</h2><div id="budgetContent"></div></section>
 </section>
 <section id="analysisView" class="ledger-view" aria-label="Analyses" hidden>
 <section class="ruled-section"><button type="button" id="analyzeCurrent" class="link">Analyser la période affichée</button><p class="budget-note" id="periodNote"></p></section>
@@ -332,10 +330,10 @@ input, textarea, select, [contenteditable="true"] {
 </footer>
 </section>
 </main><div id="toast" role="status"></div>
-<dialog id="salaryDialog" class="month-dialog salary-dialog" aria-labelledby="salaryTitle"><div class="dialog-head"><h2 id="salaryTitle">J’ai reçu ma paie</h2><button type="button" id="closeSalary" class="dialog-close">Fermer</button></div>
-<form id="salaryForm"><div class="grid"><div><label for="salaryDate">Date réelle de réception</label><input id="salaryDate" type="date" required></div><div><label for="salaryNet">Montant net effectivement reçu (€)</label><input id="salaryNet" inputmode="decimal" required placeholder="Montant réel obligatoire"></div></div>
-<p class="budget-note" id="salaryImpact"></p><p class="budget-note">Le revenu moyen configuré est uniquement une prévision. Une confirmation démarre un cycle ; aucune dépense historique n’est modifiée.</p><p id="salaryError" class="warning" hidden role="alert"></p>
-<button id="confirmSalary" class="primary" type="submit">Confirmer la réception</button></form></dialog>
+<dialog id="salaryDialog" class="month-dialog salary-dialog" aria-labelledby="salaryTitle"><div class="dialog-head"><h2 id="salaryTitle">Démarrer un cycle de paie</h2><button type="button" id="closeSalary" class="dialog-close">Fermer</button></div>
+<form id="salaryForm"><div class="grid"><div class="full"><label for="salaryDate">Date de paie</label><input id="salaryDate" type="date" required></div></div>
+<p class="budget-note" id="salaryImpact"></p><p id="salaryError" class="warning" hidden role="alert"></p>
+<button id="confirmSalary" class="primary" type="submit">Confirmer la date</button></form></dialog>
 <dialog id="monthDialog" class="month-dialog" aria-labelledby="monthDialogTitle"><div class="dialog-head"><h2 id="monthDialogTitle"></h2><button type="button" id="closeMonthDialog" class="dialog-close" autofocus>Fermer</button></div><p id="monthBreakdownTotal" class="month-breakdown-total"></p><div id="monthBreakdown"></div>
 <button type="button" id="analyzeMonth" class="primary" aria-controls="analysisReport" aria-expanded="false">Analyser cette période</button>
 <div id="analysisReport" class="analysis-report" hidden>
@@ -477,18 +475,14 @@ function renderJournal(expenses){
     group.append(row);
   }
 }
-function renderLedgerBalance(cycle,budget){
-  const balance=$('ledgerBalance'), cycleLabel=$('ledgerCycle');
-  const available=budget?.remainingCents!=null;
-  balance.textContent=available?fmt(budget.remainingCents/100):'Indéterminé';
-  balance.classList.toggle('unavailable',!available);
-  if(!cycle){
-    cycleLabel.textContent='Confirme une paie dans Budget pour afficher le cycle.';
-    return;
-  }
-  const end=cycle.end||cycle.forecastEnd;
-  const range=ledgerRangeFormat.formatRange(new Date(cycle.start+'T12:00:00'),new Date(Budget.addDays(end,-1)+'T12:00:00'));
-  cycleLabel.textContent=(mode==='month'?'Dernier cycle de paie':'Cycle de paie')+' · '+range+(cycle.end?'':' · fin prévue');
+function renderLedgerCycle(cycle){
+  const label=$('ledgerCycle');
+  label.hidden=!cycle||mode==='month';
+  if(label.hidden)return;
+  const start=new Date(cycle.start+'T12:00:00');
+  label.textContent=cycle.end
+    ? ledgerRangeFormat.formatRange(start,new Date(Budget.addDays(cycle.end,-1)+'T12:00:00'))
+    : 'Cycle en cours depuis le '+ledgerRangeFormat.format(start);
 }
 function summarizeExpenses(expenses){return Budget.summarizeExpenses(expenses)}
 
@@ -565,7 +559,7 @@ $('addCat').onclick=()=>{let n=$('newCat').value.trim();if(!n||data.categories.s
 $('reset').onclick=()=>{const response=prompt('Suppression des dépenses, paies et catégories de cette version. Les copies de récupération restent disponibles. Pour confirmer, saisis exactement EFFACER :');if(response!=='EFFACER'){if(response!==null)notify('Suppression annulée : confirmation incorrecte.');return}data=Budget.validate({categories:[...defaults],expenses:[],defaultCategory:defaults[0]});if(!save())return;cycleId=null;mode='month';formExpanded=false;selectedCategory=null;clearForm();render();notify('Données actives effacées ; copies de récupération conservées.');};
 function downloadJson(value,name){const blob=new Blob([typeof value==='string'?value:JSON.stringify(value,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name+'-'+Budget.localToday()+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 $('export').onclick=()=>{if(loaded.error){exportRecovery();return}downloadJson({...data,version:Budget.VERSION,exportedAt:new Date().toISOString()},'mes-depenses-sauvegarde')};
-function exportRecovery(){try{const copies=store?.recovery();if(!copies){notify('Stockage inaccessible.');return}const available=Object.entries(copies).filter(([,raw])=>raw!==null);if(!available.length){notify('Aucune copie de récupération disponible.');return}const names={current:'Données actuelles brutes',backup:'Copie précédant le dernier enregistrement',legacy:'Anciennes données conservées',legacySnapshot:'Copie initiale avant migration',damaged:'Données illisibles préservées lors de la restauration',beforeImport:'Données précédant le dernier import'};const choice=prompt('Choisis la copie à télécharger, puis utilise Importer pour la restaurer :\n'+available.map(([name],i)=>(i+1)+'. '+names[name]).join('\n'),'1');if(choice===null)return;const entry=available[Number(choice)-1];if(!entry){notify('Choix invalide.');return}downloadJson(entry[1],'mes-depenses-recuperation-'+entry[0]);}catch(error){notify('Récupération impossible : '+error.message)}}
+function exportRecovery(){try{const copies=store?.recovery();if(!copies){notify('Stockage inaccessible.');return}const available=Object.entries(copies).filter(([,raw])=>raw!==null);if(!available.length){notify('Aucune copie de récupération disponible.');return}const names={current:'Données actuelles brutes',backup:'Copie précédant le dernier enregistrement',legacy:'Anciennes données conservées',legacySnapshot:'Copie initiale avant migration',damaged:'Données illisibles préservées lors de la restauration',beforeImport:'Données précédant le dernier import',beforeV3:'Copie avant la mise à jour des cycles de paie'};const choice=prompt('Choisis la copie à télécharger, puis utilise Importer pour la restaurer :\n'+available.map(([name],i)=>(i+1)+'. '+names[name]).join('\n'),'1');if(choice===null)return;const entry=available[Number(choice)-1];if(!entry){notify('Choix invalide.');return}downloadJson(entry[1],'mes-depenses-recuperation-'+entry[0]);}catch(error){notify('Récupération impossible : '+error.message)}}
 $('recovery').onclick=exportRecovery;
 $('import').onclick=()=>$('file').click();$('file').onchange=async ev=>{const file=ev.target.files?.[0];if(!file)return;try{if(file.size>Budget.MAX_IMPORT_BYTES)throw Error('Fichier trop gros (5 Mo maximum).');const candidate=Budget.validate(JSON.parse(await file.text()));if(candidate.paydays.some(p=>p.date>Budget.localToday()))throw Error('Une paie confirmée est datée dans le futur.');if(confirm('Remplacer les données par cette sauvegarde : '+candidate.expenses.length+' dépenses et '+candidate.paydays.length+' paies ? Une copie des données actuelles sera conservée.')){data=candidate;if(!save(true))return;cycleId=data.paydays.at(-1)?.id||null;if(!cycleId)mode='month';clearForm();formExpanded=false;selectedCategory=null;render();notify('Sauvegarde importée.')}}catch(error){notify('Import impossible : '+error.message)}finally{ev.target.value=''}};
 
@@ -581,9 +575,8 @@ function renderBudget(period){
   $('totalLabel').textContent=mode==='month'?'Total enregistré du mois':'Total enregistré du cycle';
   $('prev').setAttribute('aria-label',mode==='month'?'Mois précédent':'Cycle précédent');$('next').setAttribute('aria-label',mode==='month'?'Mois suivant':'Cycle suivant');
   const list=Budget.cycles(data),i=list.findIndex(p=>p.id===cycleId);$('prev').disabled=mode==='cycle'&&i<=0;$('next').disabled=mode==='cycle'&&i>=list.length-1;
-  const todayString=Budget.localToday(), ledgerCycle=mode==='month'?list.at(-1):period;
-  const ledgerBudget=ledgerCycle?Budget.budget(data,ledgerCycle,todayString):null;
-  renderLedgerBalance(ledgerCycle,ledgerBudget);
+  const todayString=Budget.localToday();
+  renderLedgerCycle(period);
   $('ledgerComparison').hidden=true;
   $('analyzeCurrent').disabled=!period;$('cycleBudget').hidden=!period||mode!=='cycle';
   if(!period){$('delta').textContent='—';$('deltaLabel').textContent='Comparaison indisponible';$('periodNote').textContent='Confirme une réception de paie pour commencer. Toutes les dépenses antérieures restent disponibles par mois calendaire.';return}
@@ -592,39 +585,79 @@ function renderBudget(period){
   $('deltaLabel').textContent=c?'Sur les '+c.days+' premiers jours':'Comparaison indisponible';
   $('delta').textContent=c&&!c.referenceEmpty?(c.differenceCents>0?'+':'')+fmt(c.differenceCents/100):'Référence insuffisante';
   $('delta').style.color=c&&!c.referenceEmpty?(c.differenceCents<0?'#234a38':c.differenceCents>0?'#8b412c':'#535d50'):'#535d50';
-  $('periodNote').textContent=(m.complete?'Période terminée':'Période incomplète / ouverte')+' · '+m.elapsed+' jours observés au '+todayString+'. Complétude des saisies non vérifiée. '+(m.futureCents?'Le total comprend '+fmt(m.futureCents/100)+' datés après aujourd’hui, exclus du budget à date. ':'')+'Les anciennes dépenses sont traitées comme variables ; corrige leur nature si elles correspondent à une réserve.';
+  $('periodNote').textContent=(m.complete?'Période terminée':'Période incomplète / ouverte')+' · '+m.elapsed+' jours observés au '+todayString+'. Complétude des saisies non vérifiée. '+(m.futureCents?'Le total comprend '+fmt(m.futureCents/100)+' datés après aujourd’hui, exclus du résumé à date. ':'')+'Les anciennes dépenses sans nature renseignée sont comptabilisées comme variables.';
   if(mode!=='cycle')return;
-  const b=ledgerBudget,root=$('budgetContent');root.replaceChildren();
-  const available=paragraph(root,b.remainingCents===null?'Disponible indéterminé':fmt(b.remainingCents/100),'budget-value');
-  available.classList.toggle('unavailable',b.remainingCents===null);
-  paragraph(root,'Salaire net confirmé : '+fmt(b.incomeCents/100));
-  paragraph(root,'Budget restant '+(b.estimated?'prévisionnel':'calculé')+' après dépenses variables enregistrées. Ce montant n’est pas un solde bancaire.');
-  paragraph(root,'Dépenses variables réelles enregistrées : '+fmt(b.paid.variable/100)+'. Réserves retenues : charges '+fmt(b.reserved.fixed/100)+', épargne hors Bitcoin '+fmt(b.reserved.savings/100)+', Bitcoin '+fmt(b.reserved.bitcoin/100)+'.');
-  paragraph(root,'Une saisie de charge, Bitcoin ou épargne consomme sa réserve ; seul un dépassement réduit encore le budget variable.');
-  if(b.dca.estimated)paragraph(root,'DCA estimé au prorata des jours. Renseigne le jour hebdomadaire dans les prévisions ; pour ce cycle, utilise « Ajuster les prévisions du cycle ».');
-  else paragraph(root,b.dca.count+' échéances de DCA prévues sur '+(period.end?'le cycle clôturé.':'la durée prévisionnelle du cycle.'));
-  if(!period.end)paragraph(root,'Prochaine paie prévue le '+period.forecastEnd+' ; elle ne démarrera un cycle qu’après confirmation.');
-  if(b.overdue)paragraph(root,'Échéance de paie dépassée : confirme la réception réelle, ou attends son arrivée. La fin du cycle et le budget restant sont incertains.','warning');
-  if(b.anomaly)paragraph(root,'Durée inhabituelle (moins de 20 ou plus de 40 jours). Vérifie les paies enregistrées : une seule enveloppe mensuelle pourrait être inadaptée.','warning');
-  if(b.dailyCents!==null)paragraph(root,'Repère pour les '+b.remainingDays+' jours après aujourd’hui : '+fmt(b.dailyCents/100)+'/jour. Les dépenses du jour peuvent encore évoluer.');
-  const adjust=document.createElement('button');adjust.type='button';adjust.className='link';adjust.textContent='Ajuster les prévisions du cycle';adjust.onclick=()=>{if(!confirm('Appliquer les prévisions actuellement enregistrées à ce cycle uniquement ? Le salaire réel et les dépenses seront conservés.'))return;const p=data.paydays.find(p=>p.id===period.id);p.plan=Budget.clone(data.settings);if(!save())return;render();notify('Prévisions du cycle actualisées.')};root.append(adjust);
+  const b=Budget.budget(data,period,todayString),root=$('budgetContent');
+  root.replaceChildren();
+  paragraph(root,'Dépenses variables enregistrées à date : '+fmt(b.paid.variable/100)+'.');
+  paragraph(root,'Charges fixes : '+fmt(b.paid.fixed/100)+' enregistrés, '+fmt(b.plan.fixedCents/100)+' prévus.');
+  paragraph(root,'Épargne hors Bitcoin : '+fmt(b.paid.savings/100)+' enregistrés, '+fmt(b.plan.savingsCents/100)+' prévus.');
+  const dcaNote=b.dca.estimated?'estimation au prorata':b.dca.count+' échéance'+(b.dca.count===1?'':'s');
+  paragraph(root,'DCA Bitcoin : '+fmt(b.paid.bitcoin/100)+' enregistrés, '+fmt(b.dca.cents/100)+' prévus au '+Budget.addDays(b.projectedEnd,-1)+' ('+dcaNote+').');
+  if(b.overdue)paragraph(root,'Date prévue atteinte ou dépassée. Le cycle reste ouvert jusqu’à la prochaine date confirmée.','warning');
+  if(b.anomaly)paragraph(root,'Durée inhabituelle du cycle : '+Budget.days(period.start,period.end)+' jours. Vérifie les dates de paie enregistrées.','warning');
+  const adjust=document.createElement('button');adjust.type='button';adjust.className='link';adjust.textContent='Ajuster les prévisions du cycle';adjust.onclick=()=>{if(!confirm('Appliquer les prévisions actuellement enregistrées à ce cycle uniquement ?'))return;const p=data.paydays.find(p=>p.id===period.id);p.plan=Budget.clone(data.settings);if(!save())return;render();notify('Prévisions du cycle actualisées.')};root.append(adjust);
 }
+const budgetAmountFields=[['plannedFixed','fixedCents'],['plannedSavings','savingsCents'],['plannedDca','weeklyDcaCents']];
 function renderSalaries(){
-  const current=Budget.cycles(data).at(-1);$('salaryForecast').textContent=current?'Dernière réception : '+current.start+' · '+fmt(current.payday.netCents/100)+'. Prochaine date prévue : '+current.forecastEnd+'.':'Paie prévue autour du '+data.settings.expectedDay+'. Revenu moyen prévisionnel : '+fmt(data.settings.incomeCents/100)+'. Confirme uniquement ce que tu as réellement reçu.';
+  const current=Budget.cycles(data).at(-1);
+  $('salaryForecast').textContent=current
+    ? 'Dernière date confirmée : '+current.start+'. Prochaine date prévue : '+current.forecastEnd+'.'
+    : 'Paie prévue autour du '+data.settings.expectedDay+'. Confirme la date pour démarrer le cycle.';
   $('receiveSalary').disabled=!!loaded.error;
   const root=$('salaryList');root.replaceChildren();if(!data.paydays.length)paragraph(root,'Aucune réception confirmée. Les dépenses existantes sont conservées.');
   for(const p of [...data.paydays].reverse()){
-    const row=document.createElement('div');row.className='salary-row';const label=document.createElement('span');label.textContent=p.date+' · '+fmt(p.netCents/100);const editButton=document.createElement('button');editButton.type='button';editButton.className='edit';editButton.textContent='Corriger';editButton.setAttribute('aria-label','Corriger la paie du '+p.date);editButton.onclick=()=>openSalary(p);
-    const remove=document.createElement('button');remove.type='button';remove.className='link danger';remove.textContent='Annuler';remove.setAttribute('aria-label','Annuler la paie du '+p.date);remove.onclick=()=>{if(!confirm('Annuler la confirmation du '+p.date+' ('+fmt(p.netCents/100)+') ? Cette frontière de cycle sera supprimée, les cycles voisins seront recalculés et toutes les dépenses seront conservées.'))return;data.paydays=data.paydays.filter(x=>x.id!==p.id);if(!save())return;cycleId=data.paydays.at(-1)?.id||null;if(!cycleId)mode='month';render();notify('Confirmation annulée ; dépenses conservées.')};row.append(label,editButton,remove);root.append(row);
+    const row=document.createElement('div');row.className='salary-row';const label=document.createElement('span');label.textContent=p.date;const editButton=document.createElement('button');editButton.type='button';editButton.className='edit';editButton.textContent='Corriger';editButton.setAttribute('aria-label','Corriger la paie du '+p.date);editButton.onclick=()=>openSalary(p);
+    const remove=document.createElement('button');remove.type='button';remove.className='link danger';remove.textContent='Annuler';remove.setAttribute('aria-label','Annuler la paie du '+p.date);remove.onclick=()=>{if(!confirm('Annuler la confirmation du '+p.date+' ? Cette frontière de cycle sera supprimée, les cycles voisins seront recalculés et toutes les dépenses seront conservées.'))return;data.paydays=data.paydays.filter(x=>x.id!==p.id);if(!save())return;cycleId=data.paydays.at(-1)?.id||null;if(!cycleId)mode='month';render();notify('Confirmation annulée ; dépenses conservées.')};row.append(label,editButton,remove);root.append(row);
   }
-  for(const [id,k] of [['plannedIncome','incomeCents'],['plannedFixed','fixedCents'],['plannedSavings','savingsCents'],['plannedDca','weeklyDcaCents']])$(id).value=(data.settings[k]/100).toFixed(2).replace('.',',');
+  for(const [id,k] of budgetAmountFields)$(id).value=(data.settings[k]/100).toFixed(2).replace('.',',');
   $('dcaWeekday').value=data.settings.dcaWeekday===null?'':String(data.settings.dcaWeekday);$('expectedDay').value=data.settings.expectedDay;
 }
-$('budgetSettings').onsubmit=event=>{event.preventDefault();try{const settings={...data.settings};for(const [id,k] of [['plannedIncome','incomeCents'],['plannedFixed','fixedCents'],['plannedSavings','savingsCents'],['plannedDca','weeklyDcaCents']])settings[k]=Budget.money($(id).value);settings.dcaWeekday=$('dcaWeekday').value===''?null:Number($('dcaWeekday').value);settings.expectedDay=Number($('expectedDay').value);data.settings=Budget.validateSettings(settings);if(!save())return;render();notify('Prévisions enregistrées pour les prochaines paies.')}catch(error){notify(error.message)}};
-function openSalary(p=null){salaryEditing=p?.id||null;$('salaryForm').reset();$('salaryDate').value=p?.date||Budget.localToday();$('salaryDate').max=Budget.localToday();$('salaryNet').value=p?(p.netCents/100).toFixed(2).replace('.',','):'';$('salaryTitle').textContent=p?'Corriger une réception':'J’ai reçu ma paie';$('confirmSalary').textContent=p?'Confirmer la correction':'Confirmer la réception';$('salaryError').hidden=true;salaryPreview();$('salaryDialog').showModal()}
+$('budgetSettings').onsubmit=event=>{event.preventDefault();try{const settings={...data.settings};for(const [id,k] of budgetAmountFields)settings[k]=Budget.money($(id).value);settings.dcaWeekday=$('dcaWeekday').value===''?null:Number($('dcaWeekday').value);settings.expectedDay=Number($('expectedDay').value);data.settings=Budget.validateSettings(settings);if(!save())return;render();notify('Prévisions enregistrées pour les prochaines paies.')}catch(error){notify(error.message)}};
+function openSalary(p=null){
+  salaryEditing=p?.id||null;
+  $('salaryForm').reset();
+  const today=Budget.localToday();
+  $('salaryDate').value=p?.date||today;
+  $('salaryDate').max=today;
+  $('salaryTitle').textContent=p?'Corriger une date de paie':'Démarrer un cycle de paie';
+  $('confirmSalary').textContent=p?'Confirmer la correction':'Confirmer la date';
+  $('salaryError').hidden=true;
+  salaryPreview();
+  $('salaryDialog').showModal();
+}
 function salaryPreview(){const date=$('salaryDate').value;if(!Budget.validDate(date)){$('salaryImpact').textContent='Choisis une date réelle valide.';return}const others=data.paydays.filter(p=>p.id!==salaryEditing),before=others.filter(p=>p.date<date).at(-1),after=others.find(p=>p.date>date);$('salaryImpact').textContent='Début du cycle : '+date+'. '+(before?'Le cycle démarré le '+before.date+' se terminera le '+Budget.addDays(date,-1)+'. ':'Les dépenses antérieures resteront accessibles dans les mois calendaires. ')+(after?'Ce cycle se terminera le '+Budget.addDays(after.date,-1)+'.':'La fin réelle restera inconnue jusqu’à la prochaine réception.')+(salaryEditing?' La correction peut réaffecter les dépenses aux cycles, sans changer leurs dates.':'')}
 $('receiveSalary').onclick=()=>openSalary();$('closeSalary').onclick=()=>$('salaryDialog').close();$('salaryDate').oninput=salaryPreview;
-$('salaryForm').onsubmit=event=>{event.preventDefault();try{const old=data.paydays.find(p=>p.id===salaryEditing),date=$('salaryDate').value;const candidate={...old,id:old?.id||crypto.randomUUID(),date,netCents:Budget.money($('salaryNet').value),created:old?.created??Date.now(),plan:old?.plan||Budget.clone(data.settings)};const next=Budget.upsertPayday(data,candidate,Budget.localToday());const close=data.paydays.some(p=>p.id!==candidate.id&&Math.abs(Budget.days(p.date,date))<Budget.MIN_CYCLE_DAYS);if(close&&!confirm('Une autre paie est située à moins de 20 jours. Confirmer cette réception distincte ?'))return;data=next;if(!save()){$('salaryError').hidden=false;$('salaryError').textContent='La réception n’a pas été enregistrée. Vérifie le stockage ou recharge après avoir exporté une copie.';return}cycleId=candidate.id;mode='cycle';$('salaryDialog').close();clearForm();formExpanded=false;selectedCategory=null;render();notify(old?'Réception corrigée.':'Réception confirmée.')}catch(error){$('salaryError').hidden=false;$('salaryError').textContent=error.message}};
+$('salaryForm').onsubmit=event=>{
+  event.preventDefault();
+  const errorMessage=$('salaryError');
+  errorMessage.hidden=true;
+  try{
+    const old=data.paydays.find(p=>p.id===salaryEditing);
+    const date=$('salaryDate').value;
+    const candidate={...old,id:old?.id||crypto.randomUUID(),date,created:old?.created??Date.now(),plan:old?.plan||Budget.clone(data.settings)};
+    const next=Budget.upsertPayday(data,candidate,Budget.localToday());
+    const close=data.paydays.some(p=>p.id!==candidate.id&&Math.abs(Budget.days(p.date,date))<Budget.MIN_CYCLE_DAYS);
+    if(close&&!confirm('Une autre paie est située à moins de 20 jours. Confirmer cette date distincte ?'))return;
+    data=next;
+    if(!save()){
+      errorMessage.hidden=false;
+      errorMessage.textContent='La date n’a pas été enregistrée. Vérifie le stockage ou recharge après avoir exporté une copie.';
+      return;
+    }
+    cycleId=candidate.id;
+    mode='cycle';
+    $('salaryDialog').close();
+    clearForm();
+    formExpanded=false;
+    selectedCategory=null;
+    render();
+    notify(old?'Date de paie corrigée.':'Date de paie confirmée.');
+  }catch(error){
+    errorMessage.hidden=false;
+    errorMessage.textContent=error.message;
+  }
+};
 function renderStorageNotice(){const root=$('storageNotice');root.replaceChildren();root.hidden=!loaded.error&&!loaded.legacyChanged;if(root.hidden)return;paragraph(root,loaded.error?'Les données enregistrées ne peuvent pas être chargées : '+loaded.error+' Elles ne sont pas effacées. Exporte une copie de récupération, puis importe une sauvegarde valide.':'Les anciennes données ont changé depuis la migration (ancien onglet ou ancienne application). Exporte les copies avant de continuer ; aucune fusion automatique ne sera faite.','');const button=document.createElement('button');button.type='button';button.className='link';button.textContent='Exporter les données de récupération';button.onclick=exportRecovery;root.append(button)}
 window.addEventListener('storage',event=>{if([Budget.KEYS.current,Budget.KEYS.legacy].includes(event.key)){const root=$('storageNotice');root.hidden=false;root.textContent='Les données ont changé dans un autre onglet. Exporte les copies de récupération puis recharge avant de modifier.';}});
 
