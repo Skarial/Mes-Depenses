@@ -14,7 +14,7 @@ const legacy={version:1,categories:['Bouffe','Factures','Autres'],expenses:[
 ]};
 let browser,server,url,upgrade=false;
 before(async()=>{
-  server=http.createServer(async(req,res)=>{try{const pathname=new URL(req.url,'http://localhost').pathname;const old=pathname.startsWith('/upgrade/')&&!upgrade;const root=old?process.env.BASELINE_DIR:app;if(!root){res.writeHead(404).end();return}let file=pathname.replace(/^\/upgrade\//,'/').slice(1)||'index.html';if(!['index.html','budget.js','sw.js','manifest.webmanifest','icon.svg'].includes(file)){res.writeHead(404).end();return}const bytes=await fs.readFile(path.join(root,file));res.writeHead(200,{'Content-Type':file.endsWith('.js')?'text/javascript':file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.svg')?'image/svg+xml':'application/json','Cache-Control':'no-store'});res.end(bytes);}catch{res.writeHead(404).end()}});
+  server=http.createServer(async(req,res)=>{try{const pathname=new URL(req.url,'http://localhost').pathname;const old=pathname.startsWith('/upgrade/')&&!upgrade;const root=old?process.env.BASELINE_DIR:app;if(!root){res.writeHead(404).end();return}let file=pathname.replace(/^\/upgrade\//,'/').slice(1)||'index.html';if(!['index.html','budget.js','sw.js','manifest.webmanifest','icon.svg','icon-48.png','apple-touch-icon.png','icon-192.png','icon-512.png','icon-maskable-512.png'].includes(file)){res.writeHead(404).end();return}const bytes=await fs.readFile(path.join(root,file));res.writeHead(200,{'Content-Type':file.endsWith('.js')?'text/javascript':file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.png')?'image/png':file.endsWith('.webmanifest')?'application/manifest+json':'application/json','Cache-Control':'no-store'});res.end(bytes);}catch{res.writeHead(404).end()}});
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));url='http://127.0.0.1:'+server.address().port;
   browser=await chromium.launch(launchOptions);
 });
@@ -121,12 +121,12 @@ test('UI : hors ligne, redémarrage, paie, dépense, rapport, export et import',
     await salary(page,'2026-11-20','2250');await navigate(page,'Dépenses');await page.locator('#addExpense').click();await page.locator('#ledgerCategory').selectOption('Bouffe');await page.locator('#amount').fill('12,34');await page.locator('#submit').click();await page.reload();assert.equal((await saved(page)).expenses.length,4);await page.locator('#ledgerFilter').click();assert.equal(await page.locator('#periodMode').inputValue(),'cycle');assert.match(await page.locator('#month').textContent(),/^2026-11-20/);await navigate(page,'Analyses');await page.locator('#analyzeCurrent').click();await page.locator('#analyzeMonth').click();assert.match(await page.locator('#analysisText').inputValue(),/12,34/);await page.locator('#closeMonthDialog').click();const exported=await download(page,'#export');await importJson(page,exported);assert.deepEqual((await saved(page)).expenses,exported.expenses);assert.deepEqual(errors,[]);
   }finally{await context?.close();console.log('Profil synthétique de validation conservé : '+profile)}
 });
-test('UI : mise à jour v30 vers v31 puis réouverture hors ligne',{skip:!process.env.BASELINE_DIR||!!process.env.FILE_MODE,timeout:30000},async()=>{
+test('UI : mise à jour v31 vers v32 puis réouverture hors ligne',{skip:!process.env.BASELINE_DIR||!!process.env.FILE_MODE,timeout:30000},async()=>{
   upgrade=false;
   const {context,page,errors}=await open(legacy,'/upgrade/');
   try{
     await controlled(page);
-    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v30')),true);
+    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v31')),true);
     await salary(page);
     const beforeUpdate=await saved(page);
     upgrade=true;
@@ -142,8 +142,8 @@ test('UI : mise à jour v30 vers v31 puis réouverture hors ligne',{skip:!proces
     assert.equal(await page.locator('#categories').isVisible(),true);
     assert.equal(await page.locator('#ledgerHistory').isVisible(),false);
     assert.equal(await page.locator('#periodMode').inputValue(),'cycle');
-    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v31')),true);
-    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v30')),false);
+    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v32')),true);
+    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v31')),false);
     assert.deepEqual(await saved(page),beforeUpdate);
     assert.deepEqual(errors,[]);
   }finally{await context.close();upgrade=true}
