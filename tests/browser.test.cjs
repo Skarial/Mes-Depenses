@@ -178,7 +178,7 @@ test('UI : hors ligne, redémarrage, paie, dépense, rapport, export et import',
     await salary(page,'2026-11-20');await navigate(page,'Dépenses');await page.locator('#addExpense').click();await page.locator('#ledgerCategory').selectOption('Bouffe');await page.locator('#amount').fill('12,34');await page.locator('#submit').click();await page.reload();assert.equal((await saved(page)).expenses.length,4);await page.locator('#ledgerFilter').click();assert.equal(await page.locator('#periodMode').inputValue(),'cycle');assert.match(await page.locator('#month').textContent(),/^2026-11-20/);await navigate(page,'Analyses');await page.locator('#analyzeCurrent').click();await page.locator('#analyzeMonth').click();assert.match(await page.locator('#analysisText').inputValue(),/12,34/);await page.locator('#closeMonthDialog').click();const exported=await download(page,'#export');await importJson(page,exported);assert.deepEqual((await saved(page)).expenses,exported.expenses);assert.deepEqual(errors,[]);
   }finally{await context?.close();console.log('Profil synthétique de validation conservé : '+profile)}
 });
-test('UI : mise à jour vers v34, migration après une paie confirmée hors ligne',{skip:!process.env.BASELINE_DIR||!!process.env.FILE_MODE,timeout:45000},async()=>{
+test('UI : mise à jour vers v35, migration après une paie confirmée hors ligne',{skip:!process.env.BASELINE_DIR||!!process.env.FILE_MODE,timeout:45000},async()=>{
   const previousCache=process.env.BASELINE_CACHE||'mes-depenses-v32';
   upgrade=false;
   const {context,page,errors}=await open(null,'/upgrade/');
@@ -196,7 +196,7 @@ test('UI : mise à jour vers v34, migration après une paie confirmée hors lign
       await registration.update();
       await activated;
     });
-    await page.waitForFunction(async cache=>await caches.has('mes-depenses-v34')&&!await caches.has(cache),previousCache);
+    await page.waitForFunction(async cache=>await caches.has('mes-depenses-v35')&&!await caches.has(cache),previousCache);
     await context.setOffline(true);
     await page.reload();
     assert.equal(await page.locator('#addExpense').isVisible(),true);
@@ -291,6 +291,35 @@ test('UI : paiement Bitstack prérempli, confirmé une seule fois et disponible 
     await page.evaluate(fragment=>{location.hash=fragment},link);
     await page.waitForFunction(()=>document.getElementById('toast').textContent.includes('déjà enregistré'));
     assert.equal((await saved(page)).expenses.length,legacy.expenses.length+1);
+    assert.deepEqual(errors,[]);
+  }finally{await context.close()}
+});
+
+test('UI : le lien Bitstack ramène au formulaire depuis le bas de la page',async()=>{
+  const {context,page,errors}=await open();
+  try{
+    await page.addStyleTag({content:'body { padding-bottom: 1500px }'});
+    await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
+    await page.evaluate(fragment=>{location.hash=fragment},'#bitstack?'+new URLSearchParams({
+      id:'12345678-0000-3000-8000-123456789abc',cents:'1490',
+      date:'2026-11-20',merchant:'RESTO RENAISSANCE DE'
+    }));
+    await page.waitForFunction(()=>{
+      const heading=document.getElementById('formContext');
+      const bounds=heading.getBoundingClientRect();
+      // Le défilement arrondit au pixel, contrairement aux coordonnées du rendu.
+      const scrollRoundingTolerance=1;
+      return document.activeElement===heading&&bounds.top>=-scrollRoundingTolerance&&bounds.bottom<=innerHeight;
+    },null,{timeout:5000});
+    assert.equal(await page.locator('#amount').inputValue(),'14,90');
+    assert.equal(await page.locator('#merchant').inputValue(),'RESTO RENAISSANCE DE');
+    assert.equal(await page.locator('#date').inputValue(),'2026-11-20');
+    assert.equal(await page.locator('#ledgerCategory').inputValue(),'');
+    for(const field of ['amount','date','merchant']){
+      const bounds=await page.locator('#'+field).boundingBox();
+      assert.ok(bounds&&bounds.y>=0&&bounds.y+bounds.height<=844,field+' visible à l’écran');
+    }
+    assert.equal(await saved(page),null);
     assert.deepEqual(errors,[]);
   }finally{await context.close()}
 });

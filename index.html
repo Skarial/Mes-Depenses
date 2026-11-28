@@ -262,7 +262,7 @@ input, textarea, select, [contenteditable="true"] {
     <div id="entries"></div>
   </div>
 </section>
-<form id="form" hidden><div id="formContext" class="inline-context"></div><div class="grid"><div class="full" id="ledgerCategoryField" hidden><label for="ledgerCategory">Catégorie</label><select id="ledgerCategory"></select></div><div><label for="amount">Montant (€)</label><input id="amount" inputmode="decimal" placeholder="" required></div><div><label for="date">Date</label><input type="date" id="date" required></div><div class="full" id="merchantField" hidden><label for="merchant">Commerçant</label><input id="merchant" maxlength="80"></div><div class="full"><label for="expenseKind">Nature budgétaire</label><select id="expenseKind"><option value="variable">Dépense variable</option><option value="fixed">Charge fixe déjà couverte par la réserve</option><option value="bitcoin">DCA Bitcoin</option><option value="savings">Versement d’épargne hors Bitcoin</option></select></div></div><button class="primary" id="submit">+ Ajouter la dépense</button><div class="actions"><button type="button" id="cancel" class="link" hidden>Annuler la modification</button><button type="button" id="delete" class="link danger" hidden>Supprimer cette dépense</button></div></form>
+<form id="form" hidden><div id="formContext" class="inline-context" tabindex="-1"></div><div class="grid"><div class="full" id="ledgerCategoryField" hidden><label for="ledgerCategory">Catégorie</label><select id="ledgerCategory"></select></div><div><label for="amount">Montant (€)</label><input id="amount" inputmode="decimal" placeholder="" required></div><div><label for="date">Date</label><input type="date" id="date" required></div><div class="full" id="merchantField" hidden><label for="merchant">Commerçant</label><input id="merchant" maxlength="80"></div><div class="full"><label for="expenseKind">Nature budgétaire</label><select id="expenseKind"><option value="variable">Dépense variable</option><option value="fixed">Charge fixe déjà couverte par la réserve</option><option value="bitcoin">DCA Bitcoin</option><option value="savings">Versement d’épargne hors Bitcoin</option></select></div></div><button class="primary" id="submit">+ Ajouter la dépense</button><div class="actions"><button type="button" id="cancel" class="link" hidden>Annuler la modification</button><button type="button" id="delete" class="link danger" hidden>Supprimer cette dépense</button></div></form>
 </section>
 <section id="budgetView" class="ledger-view" aria-label="Budget" hidden>
 <section class="ruled-section"><button type="button" id="receiveSalary" class="primary">Paie</button><p class="budget-note" id="salaryForecast"></p>
@@ -818,7 +818,22 @@ function prefillBitstack(){
   $('formContext').textContent='Paiement Bitstack à confirmer';
   $('cancel').textContent='Annuler la saisie';
   $('cancel').hidden=false;
-  $('form').scrollIntoView({block:'center'});
+  showBitstackConfirmation(expenseId);
+}
+
+function showBitstackConfirmation(expenseId){
+  const reveal=()=>requestAnimationFrame(()=>{
+    if(bitstackId!==expenseId||!formExpanded||$('expensesView').hidden)return;
+    const heading=$('formContext');
+    heading.focus({preventScroll:true});
+    heading.scrollIntoView({block:'start',behavior:'instant'});
+  });
+
+  // Android can restore the previous scroll position when the PWA opens.
+  if(document.readyState!=='complete'){
+    window.addEventListener('pageshow',reveal,{once:true});
+  }
+  reveal();
 }
 window.addEventListener('hashchange',prefillBitstack);
 prefillBitstack();
