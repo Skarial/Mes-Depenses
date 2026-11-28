@@ -158,6 +158,18 @@ input, textarea, select, [contenteditable="true"] {
 #ledgerFormSlot:not(:empty) { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule); }
 .inline-form-host:not(:empty) { margin: 0 0 16px; padding: 10px 0 10px 12px; border-left: 2px solid var(--rule); }
 .inline-context { margin-bottom: 10px; color: var(--ink-green); font-size: .83rem; font-weight: 700; }
+.inline-context.bitstack-confirmation {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--fine-rule);
+  font: 1.35rem/1.25 var(--serif);
+}
+/* Le titre reçoit le focus à l’ouverture : soulignement discret, sans cadre. */
+.inline-context.bitstack-confirmation:focus { outline: none; }
+.inline-context.bitstack-confirmation:focus-visible {
+  border-bottom-color: var(--ink-green);
+  box-shadow: 0 1px 0 var(--ink-green);
+}
 .cat-action { padding: 8px 0 12px; cursor: pointer; touch-action: manipulation; }
 .cat-action:hover, .entry .edit:hover, .arrow:hover, .ledger-filter:hover, .dialog-close:hover, .edit:hover {
   background: var(--wash);
@@ -549,7 +561,7 @@ $('copyAnalysis').onclick=async()=>{
 $('closeMonthDialog').onclick=()=>$('monthDialog').close();
 function empty(t){let el=document.createElement('div');el.className='empty';el.textContent=t;return el}
 let bitstackId=null;
-function clearForm(){bitstackId=null;$('merchantField').hidden=true;editing=null;$('form').reset();$('ledgerCategory').selectedIndex=-1;$('date').value=Budget.localToday();$('formContext').textContent='Nouvelle dépense';$('submit').textContent='+ Ajouter la dépense';$('cancel').textContent='Annuler la modification';$('cancel').hidden=true;$('delete').hidden=true}
+function clearForm(){bitstackId=null;$('merchantField').hidden=true;editing=null;$('form').reset();$('ledgerCategory').selectedIndex=-1;$('date').value=Budget.localToday();$('formContext').classList.remove('bitstack-confirmation');$('formContext').textContent='Nouvelle dépense';$('submit').textContent='+ Ajouter la dépense';$('cancel').textContent='Annuler la modification';$('cancel').hidden=true;$('delete').hidden=true}
 function edit(id){let e=data.expenses.find(x=>x.id===id);if(!e)return;clearForm();$('ledgerCategories').open=true;editing=id;selectedCategory=e.category;formExpanded=true;render();$('amount').value=(e.cents/100).toFixed(2).replace('.',',');$('date').value=e.date;$('expenseKind').value=e.kind||'variable';$('formContext').textContent='Modifier une dépense · '+e.category;$('submit').textContent='Enregistrer les modifications';$('cancel').hidden=false;$('delete').hidden=false;$('form').scrollIntoView({behavior:'smooth',block:'center'})}
 $('form').onsubmit=ev=>{ev.preventDefault();let raw=$('amount').value.trim().replace(/\s/g,'').replace(',','.');if(!/^\d+(\.\d{1,2})?$/.test(raw)){notify('Montant invalide.');return}let cents;try{cents=Budget.money(raw)}catch(error){notify(error.message);return}let date=$('date').value,category=selectedCategory??$('ledgerCategory').value;if(!Number.isSafeInteger(cents)||cents<=0||!Budget.validDate(date)||!data.categories.includes(category)){notify('Vérifie le montant, la date et la catégorie.');return}if(bitstackId&&data.expenses.some(e=>e.id===bitstackId)){notify('Ce paiement Bitstack est déjà enregistré.');return}let old=data.expenses.find(x=>x.id===editing);let e={...old,kind:$('expenseKind').value,id:old?.id||bitstackId||crypto.randomUUID(),created:old?.created??Date.now(),cents,date,category,description:bitstackId?$('merchant').value.trim():old?.description||''};if(old)Object.assign(old,e);else data.expenses.push(e);view=new Date(Number(date.slice(0,4)),Number(date.slice(5,7))-1,1);if(!save())return;if(mode==='cycle'){const found=Budget.cycles(data).find(p=>date>=p.start&&(!p.end||date<p.end));if(found)cycleId=found.id;else mode='month'}clearForm();formExpanded=false;selectedCategory=null;render();notify(old?'Dépense modifiée.':'Dépense ajoutée.')};
 $('cancel').onclick=()=>{clearForm();formExpanded=false;selectedCategory=null;render()};$('delete').onclick=()=>{if(editing&&confirm('Supprimer définitivement cette dépense ?')){data.expenses=data.expenses.filter(e=>e.id!==editing);if(!save())return;clearForm();formExpanded=false;selectedCategory=null;render();notify('Dépense supprimée.')}};
@@ -816,6 +828,7 @@ function prefillBitstack(){
   $('merchantField').hidden=false;
   $('ledgerCategory').selectedIndex=-1;
   $('formContext').textContent='Paiement Bitstack à confirmer';
+  $('formContext').classList.add('bitstack-confirmation');
   $('cancel').textContent='Annuler la saisie';
   $('cancel').hidden=false;
   showBitstackConfirmation(expenseId);
@@ -826,7 +839,11 @@ function showBitstackConfirmation(expenseId){
     if(bitstackId!==expenseId||!formExpanded||$('expensesView').hidden)return;
     const heading=$('formContext');
     heading.focus({preventScroll:true});
-    heading.scrollIntoView({block:'start',behavior:'instant'});
+    const formBounds=$('form').getBoundingClientRect();
+    // Centrer le formulaire complet ; sur un écran court, garder le titre accessible.
+    const minimumTopGap=16;
+    const topGap=Math.max(minimumTopGap,(innerHeight-formBounds.height)/2);
+    window.scrollTo({top:scrollY+formBounds.top-topGap,behavior:'instant'});
   });
 
   // Android can restore the previous scroll position when the PWA opens.

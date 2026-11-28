@@ -178,7 +178,7 @@ test('UI : hors ligne, redémarrage, paie, dépense, rapport, export et import',
     await salary(page,'2026-11-20');await navigate(page,'Dépenses');await page.locator('#addExpense').click();await page.locator('#ledgerCategory').selectOption('Bouffe');await page.locator('#amount').fill('12,34');await page.locator('#submit').click();await page.reload();assert.equal((await saved(page)).expenses.length,4);await page.locator('#ledgerFilter').click();assert.equal(await page.locator('#periodMode').inputValue(),'cycle');assert.match(await page.locator('#month').textContent(),/^2026-11-20/);await navigate(page,'Analyses');await page.locator('#analyzeCurrent').click();await page.locator('#analyzeMonth').click();assert.match(await page.locator('#analysisText').inputValue(),/12,34/);await page.locator('#closeMonthDialog').click();const exported=await download(page,'#export');await importJson(page,exported);assert.deepEqual((await saved(page)).expenses,exported.expenses);assert.deepEqual(errors,[]);
   }finally{await context?.close();console.log('Profil synthétique de validation conservé : '+profile)}
 });
-test('UI : mise à jour vers v35, migration après une paie confirmée hors ligne',{skip:!process.env.BASELINE_DIR||!!process.env.FILE_MODE,timeout:45000},async()=>{
+test('UI : mise à jour vers v36, migration après une paie confirmée hors ligne',{skip:!process.env.BASELINE_DIR||!!process.env.FILE_MODE,timeout:45000},async()=>{
   const previousCache=process.env.BASELINE_CACHE||'mes-depenses-v32';
   upgrade=false;
   const {context,page,errors}=await open(null,'/upgrade/');
@@ -196,7 +196,7 @@ test('UI : mise à jour vers v35, migration après une paie confirmée hors lign
       await registration.update();
       await activated;
     });
-    await page.waitForFunction(async cache=>await caches.has('mes-depenses-v35')&&!await caches.has(cache),previousCache);
+    await page.waitForFunction(async cache=>await caches.has('mes-depenses-v36')&&!await caches.has(cache),previousCache);
     await context.setOffline(true);
     await page.reload();
     assert.equal(await page.locator('#addExpense').isVisible(),true);
@@ -318,6 +318,30 @@ test('UI : le lien Bitstack ramène au formulaire depuis le bas de la page',asyn
     for(const field of ['amount','date','merchant']){
       const bounds=await page.locator('#'+field).boundingBox();
       assert.ok(bounds&&bounds.y>=0&&bounds.y+bounds.height<=844,field+' visible à l’écran');
+    }
+    for(const height of [844,748,480]){
+      await page.setViewportSize({width:390,height});
+      await page.evaluate(()=>document.getElementById('cancel').click());
+      await page.evaluate(()=>scrollTo(0,document.documentElement.scrollHeight));
+      await page.evaluate(()=>{location.hash='#bitstack?'+new URLSearchParams({
+        id:'12345678-0000-3000-8000-123456789abc',cents:'1490',
+        date:'2026-11-20',merchant:'RESTO RENAISSANCE DE'
+      })});
+      await page.waitForFunction(()=>{
+        const r=document.getElementById('form').getBoundingClientRect();
+        const desiredTop=Math.max(16,(innerHeight-r.height)/2);
+        return document.activeElement===document.getElementById('formContext')&&Math.abs(r.top-desiredTop)<=1;
+      },null,{timeout:5000});
+      const form=await page.locator('#form').boundingBox();
+      if(form.height<=height-32){
+        assert.ok(Math.abs(form.y-(height-form.y-form.height))<=2,'Marges haute et basse équilibrées');
+        const cancel=await page.locator('#cancel').boundingBox();
+        assert.ok(cancel.y+cancel.height<=height,'Bouton Annuler visible');
+      }
+      if(height===748&&process.env.SCREENSHOT_DIR){
+        await fs.mkdir(process.env.SCREENSHOT_DIR,{recursive:true});
+        await page.screenshot({path:path.join(process.env.SCREENSHOT_DIR,'bitstack-centrage-mobile.png')});
+      }
     }
     assert.equal(await saved(page),null);
     assert.deepEqual(errors,[]);
