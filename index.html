@@ -262,7 +262,7 @@ input, textarea, select, [contenteditable="true"] {
     <div id="entries"></div>
   </div>
 </section>
-<form id="form" hidden><div id="formContext" class="inline-context"></div><div class="grid"><div class="full" id="ledgerCategoryField" hidden><label for="ledgerCategory">Catégorie</label><select id="ledgerCategory"></select></div><div><label for="amount">Montant (€)</label><input id="amount" inputmode="decimal" placeholder="" required></div><div><label for="date">Date</label><input type="date" id="date" required></div><div class="full"><label for="expenseKind">Nature budgétaire</label><select id="expenseKind"><option value="variable">Dépense variable</option><option value="fixed">Charge fixe déjà couverte par la réserve</option><option value="bitcoin">DCA Bitcoin</option><option value="savings">Versement d’épargne hors Bitcoin</option></select></div></div><button class="primary" id="submit">+ Ajouter la dépense</button><div class="actions"><button type="button" id="cancel" class="link" hidden>Annuler la modification</button><button type="button" id="delete" class="link danger" hidden>Supprimer cette dépense</button></div></form>
+<form id="form" hidden><div id="formContext" class="inline-context"></div><div class="grid"><div class="full" id="ledgerCategoryField" hidden><label for="ledgerCategory">Catégorie</label><select id="ledgerCategory"></select></div><div><label for="amount">Montant (€)</label><input id="amount" inputmode="decimal" placeholder="" required></div><div><label for="date">Date</label><input type="date" id="date" required></div><div class="full" id="merchantField" hidden><label for="merchant">Commerçant</label><input id="merchant" maxlength="80"></div><div class="full"><label for="expenseKind">Nature budgétaire</label><select id="expenseKind"><option value="variable">Dépense variable</option><option value="fixed">Charge fixe déjà couverte par la réserve</option><option value="bitcoin">DCA Bitcoin</option><option value="savings">Versement d’épargne hors Bitcoin</option></select></div></div><button class="primary" id="submit">+ Ajouter la dépense</button><div class="actions"><button type="button" id="cancel" class="link" hidden>Annuler la modification</button><button type="button" id="delete" class="link danger" hidden>Supprimer cette dépense</button></div></form>
 </section>
 <section id="budgetView" class="ledger-view" aria-label="Budget" hidden>
 <section class="ruled-section"><button type="button" id="receiveSalary" class="primary">Paie</button><p class="budget-note" id="salaryForecast"></p>
@@ -548,9 +548,10 @@ $('copyAnalysis').onclick=async()=>{
 };
 $('closeMonthDialog').onclick=()=>$('monthDialog').close();
 function empty(t){let el=document.createElement('div');el.className='empty';el.textContent=t;return el}
-function clearForm(){editing=null;$('form').reset();$('ledgerCategory').selectedIndex=-1;$('date').value=Budget.localToday();$('formContext').textContent='Nouvelle dépense';$('submit').textContent='+ Ajouter la dépense';$('cancel').hidden=true;$('delete').hidden=true}
+let bitstackId=null;
+function clearForm(){bitstackId=null;$('merchantField').hidden=true;editing=null;$('form').reset();$('ledgerCategory').selectedIndex=-1;$('date').value=Budget.localToday();$('formContext').textContent='Nouvelle dépense';$('submit').textContent='+ Ajouter la dépense';$('cancel').textContent='Annuler la modification';$('cancel').hidden=true;$('delete').hidden=true}
 function edit(id){let e=data.expenses.find(x=>x.id===id);if(!e)return;clearForm();$('ledgerCategories').open=true;editing=id;selectedCategory=e.category;formExpanded=true;render();$('amount').value=(e.cents/100).toFixed(2).replace('.',',');$('date').value=e.date;$('expenseKind').value=e.kind||'variable';$('formContext').textContent='Modifier une dépense · '+e.category;$('submit').textContent='Enregistrer les modifications';$('cancel').hidden=false;$('delete').hidden=false;$('form').scrollIntoView({behavior:'smooth',block:'center'})}
-$('form').onsubmit=ev=>{ev.preventDefault();let raw=$('amount').value.trim().replace(/\s/g,'').replace(',','.');if(!/^\d+(\.\d{1,2})?$/.test(raw)){notify('Montant invalide.');return}let cents;try{cents=Budget.money(raw)}catch(error){notify(error.message);return}let date=$('date').value,category=selectedCategory??$('ledgerCategory').value;if(!Number.isSafeInteger(cents)||cents<=0||!Budget.validDate(date)||!data.categories.includes(category)){notify('Vérifie le montant, la date et la catégorie.');return}let old=data.expenses.find(x=>x.id===editing);let e={...old,kind:$('expenseKind').value,id:old?.id||crypto.randomUUID(),created:old?.created??Date.now(),cents,date,category,description:old?.description||''};if(old)Object.assign(old,e);else data.expenses.push(e);view=new Date(Number(date.slice(0,4)),Number(date.slice(5,7))-1,1);if(!save())return;if(mode==='cycle'){const found=Budget.cycles(data).find(p=>date>=p.start&&(!p.end||date<p.end));if(found)cycleId=found.id;else mode='month'}clearForm();formExpanded=false;selectedCategory=null;render();notify(old?'Dépense modifiée.':'Dépense ajoutée.')};
+$('form').onsubmit=ev=>{ev.preventDefault();let raw=$('amount').value.trim().replace(/\s/g,'').replace(',','.');if(!/^\d+(\.\d{1,2})?$/.test(raw)){notify('Montant invalide.');return}let cents;try{cents=Budget.money(raw)}catch(error){notify(error.message);return}let date=$('date').value,category=selectedCategory??$('ledgerCategory').value;if(!Number.isSafeInteger(cents)||cents<=0||!Budget.validDate(date)||!data.categories.includes(category)){notify('Vérifie le montant, la date et la catégorie.');return}if(bitstackId&&data.expenses.some(e=>e.id===bitstackId)){notify('Ce paiement Bitstack est déjà enregistré.');return}let old=data.expenses.find(x=>x.id===editing);let e={...old,kind:$('expenseKind').value,id:old?.id||bitstackId||crypto.randomUUID(),created:old?.created??Date.now(),cents,date,category,description:bitstackId?$('merchant').value.trim():old?.description||''};if(old)Object.assign(old,e);else data.expenses.push(e);view=new Date(Number(date.slice(0,4)),Number(date.slice(5,7))-1,1);if(!save())return;if(mode==='cycle'){const found=Budget.cycles(data).find(p=>date>=p.start&&(!p.end||date<p.end));if(found)cycleId=found.id;else mode='month'}clearForm();formExpanded=false;selectedCategory=null;render();notify(old?'Dépense modifiée.':'Dépense ajoutée.')};
 $('cancel').onclick=()=>{clearForm();formExpanded=false;selectedCategory=null;render()};$('delete').onclick=()=>{if(editing&&confirm('Supprimer définitivement cette dépense ?')){data.expenses=data.expenses.filter(e=>e.id!==editing);if(!save())return;clearForm();formExpanded=false;selectedCategory=null;render();notify('Dépense supprimée.')}};
 $('prev').onclick=()=>navigatePeriod(-1);$('next').onclick=()=>navigatePeriod(1);
 $('manage').onclick=()=>{renderManager();$('manager').classList.toggle('open');$('manage').setAttribute('aria-expanded',String($('manager').classList.contains('open')))};
@@ -782,6 +783,45 @@ document.querySelector('[aria-controls="portfolioView"]').addEventListener('clic
 loadPortfolioForm();
 renderGoals();
 clearForm();render();renderStorageNotice();
+
+function prefillBitstack(){
+  if(!location.hash.startsWith('#bitstack?'))return;
+  const payment=new URLSearchParams(location.hash.slice('#bitstack?'.length));
+  history.replaceState(null,'',location.pathname+location.search);
+  const id=payment.get('id')||'';
+  const cents=Number(payment.get('cents'));
+  const date=payment.get('date')||'';
+  const merchant=(payment.get('merchant')||'').trim();
+  if(!/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(id)||
+     !/^[1-9][0-9]*$/.test(payment.get('cents')||'')||!Number.isSafeInteger(cents)||
+     !Budget.validDate(date)||date>Budget.localToday()||!merchant||merchant.length>80){
+    notify('Lien de paiement Bitstack invalide.');
+    return;
+  }
+  const expenseId='bitstack-'+id;
+  if(data.expenses.some(expense=>expense.id===expenseId)){
+    notify('Ce paiement Bitstack est déjà enregistré.');
+    return;
+  }
+  if(formExpanded&&!confirm('Remplacer la saisie en cours par le paiement Bitstack ?'))return;
+  clearForm();
+  document.querySelector('.app-nav [aria-controls="expensesView"]').click();
+  bitstackId=expenseId;
+  selectedCategory=null;
+  formExpanded=true;
+  render();
+  $('amount').value=Math.floor(cents/100)+','+String(cents%100).padStart(2,'0');
+  $('date').value=date;
+  $('merchant').value=merchant;
+  $('merchantField').hidden=false;
+  $('ledgerCategory').selectedIndex=-1;
+  $('formContext').textContent='Paiement Bitstack à confirmer';
+  $('cancel').textContent='Annuler la saisie';
+  $('cancel').hidden=false;
+  $('form').scrollIntoView({block:'center'});
+}
+window.addEventListener('hashchange',prefillBitstack);
+prefillBitstack();
 if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
   const workers=navigator.serviceWorker;
   let hadController=Boolean(workers.controller);

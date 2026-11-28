@@ -178,12 +178,13 @@ test('UI : hors ligne, redémarrage, paie, dépense, rapport, export et import',
     await salary(page,'2026-11-20');await navigate(page,'Dépenses');await page.locator('#addExpense').click();await page.locator('#ledgerCategory').selectOption('Bouffe');await page.locator('#amount').fill('12,34');await page.locator('#submit').click();await page.reload();assert.equal((await saved(page)).expenses.length,4);await page.locator('#ledgerFilter').click();assert.equal(await page.locator('#periodMode').inputValue(),'cycle');assert.match(await page.locator('#month').textContent(),/^2026-11-20/);await navigate(page,'Analyses');await page.locator('#analyzeCurrent').click();await page.locator('#analyzeMonth').click();assert.match(await page.locator('#analysisText').inputValue(),/12,34/);await page.locator('#closeMonthDialog').click();const exported=await download(page,'#export');await importJson(page,exported);assert.deepEqual((await saved(page)).expenses,exported.expenses);assert.deepEqual(errors,[]);
   }finally{await context?.close();console.log('Profil synthétique de validation conservé : '+profile)}
 });
-test('UI : mise à jour v32 vers v33, migration après une paie confirmée hors ligne',{skip:!process.env.BASELINE_DIR||!!process.env.FILE_MODE,timeout:45000},async()=>{
+test('UI : mise à jour vers v34, migration après une paie confirmée hors ligne',{skip:!process.env.BASELINE_DIR||!!process.env.FILE_MODE,timeout:45000},async()=>{
+  const previousCache=process.env.BASELINE_CACHE||'mes-depenses-v32';
   upgrade=false;
   const {context,page,errors}=await open(null,'/upgrade/');
   try{
     await controlled(page);
-    assert.equal(await page.evaluate(()=>caches.has('mes-depenses-v32')),true);
+    assert.equal(await page.evaluate(cache=>caches.has(cache),previousCache),true);
     const raw=JSON.stringify(v2);
     await page.evaluate(({key,raw})=>localStorage.setItem(key,raw),{key:B.KEYS.current,raw});
     await page.reload();
@@ -195,7 +196,7 @@ test('UI : mise à jour v32 vers v33, migration après une paie confirmée hors 
       await registration.update();
       await activated;
     });
-    await page.waitForFunction(async()=>await caches.has('mes-depenses-v33')&&!await caches.has('mes-depenses-v32'));
+    await page.waitForFunction(async cache=>await caches.has('mes-depenses-v34')&&!await caches.has(cache),previousCache);
     await context.setOffline(true);
     await page.reload();
     assert.equal(await page.locator('#addExpense').isVisible(),true);
@@ -215,4 +216,81 @@ test('UI : mise à jour v32 vers v33, migration après une paie confirmée hors 
     assert.doesNotMatch(JSON.stringify(migrated),/"(?:netCents|incomeCents)"/);
     assert.deepEqual(errors,[]);
   }finally{await context.close();upgrade=true}
+});
+
+test('UI : une paie garde son identifiant indépendant du paiement Bitstack en attente',async()=>{
+  const {context,page,errors}=await open();
+  try{
+    const id='12345678-0000-3000-8000-123456789abc';
+    await page.evaluate(fragment=>{location.hash=fragment},'#bitstack?'+new URLSearchParams({
+      id,cents:'1490',date:'2026-11-20',merchant:'RESTO RENAISSANCE DE'
+    }));
+    await page.locator('#merchantField').waitFor({state:'visible'});
+    await salary(page,'2026-11-20');
+    const state=await saved(page);
+    assert.equal(state.paydays.length,1);
+    assert.notEqual(state.paydays[0].id,'bitstack-'+id);
+    assert.deepEqual(state.expenses,legacy.expenses);
+    assert.deepEqual(errors,[]);
+  }finally{await context.close()}
+});
+
+test('UI : un lien Bitstack invalide ne remplace pas la saisie et une annulation ne sauvegarde rien',async()=>{
+  const {context,page,errors}=await open();
+  try{
+    const payment={id:'12345678-0000-3000-8000-123456789abc',cents:'1490',date:'2026-11-20',merchant:'RESTO RENAISSANCE DE'};
+    const send=values=>page.evaluate(fragment=>{location.hash=fragment},'#bitstack?'+new URLSearchParams(values));
+    await page.locator('#addExpense').click();
+    await page.locator('#amount').fill('9,75');
+    for(const changes of [{id:'invalid'},{cents:'-1490'},{cents:'9007199254740992'},{date:'2026-02-30'},{date:'2026-11-21'},{merchant:''},{merchant:'x'.repeat(81)}]){
+      await send({...payment,...changes});
+      await page.waitForFunction(()=>location.hash==='');
+      assert.match(await page.locator('#toast').textContent(),/invalide/);
+      assert.equal(await page.locator('#amount').inputValue(),'9,75');
+      assert.equal(await saved(page),null);
+    }
+    page.removeAllListeners('dialog');
+    page.once('dialog',dialog=>dialog.dismiss());
+    await send(payment);
+    await page.waitForFunction(()=>location.hash==='');
+    assert.equal(await page.locator('#amount').inputValue(),'9,75');
+    page.once('dialog',dialog=>dialog.accept());
+    await send(payment);
+    await page.locator('#merchantField').waitFor({state:'visible'});
+    await page.locator('#cancel').click();
+    assert.equal(await page.locator('#form').isVisible(),false);
+    assert.equal(await saved(page),null);
+    assert.deepEqual(errors,[]);
+  }finally{await context.close()}
+});
+
+test('UI : paiement Bitstack prérempli, confirmé une seule fois et disponible hors ligne',
+  {skip:!!process.env.FILE_MODE},async()=>{
+  const {context,page,errors}=await open();
+  try{
+    await controlled(page);
+    await context.setOffline(true);
+    const link='#bitstack?'+new URLSearchParams({
+      id:'12345678-0000-3000-8000-123456789abc',
+      cents:'1490',
+      date:'2026-11-20',
+      merchant:'RESTO RENAISSANCE DE'
+    });
+    await page.goto(url+'/index.html'+link);
+    await page.locator('#form').waitFor({state:'visible'});
+    assert.equal(await page.locator('#amount').inputValue(),'14,90');
+    assert.equal(await page.locator('#merchant').inputValue(),'RESTO RENAISSANCE DE');
+    assert.equal(await page.locator('#ledgerCategory').inputValue(),'');
+    assert.equal(await saved(page),null);
+    await page.locator('#ledgerCategory').selectOption('Bouffe');
+    await page.locator('#submit').click();
+    const imported=(await saved(page)).expenses.filter(e=>e.id.startsWith('bitstack-'));
+    assert.equal(imported.length,1);
+    assert.equal(imported[0].description,'RESTO RENAISSANCE DE');
+    assert.equal(imported[0].cents,1490);
+    await page.evaluate(fragment=>{location.hash=fragment},link);
+    await page.waitForFunction(()=>document.getElementById('toast').textContent.includes('déjà enregistré'));
+    assert.equal((await saved(page)).expenses.length,legacy.expenses.length+1);
+    assert.deepEqual(errors,[]);
+  }finally{await context.close()}
 });

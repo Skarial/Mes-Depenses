@@ -54,7 +54,7 @@ L’effacement des données actives conserve les copies de récupération ; le m
 
 - `index.html` : interface existante étendue et gestion des interactions.
 - `budget.js` : dates civiles, centimes, cycles, rapports, validation et stockage ; aucun service externe ni dépendance d’exécution.
-- `sw.js` : cache v33 comprenant le moteur budgétaire et les icônes PNG. Une mise à jour utilise le cache de la nouvelle version après installation complète et rechargement. Une installation incomplète conserve l’ancienne version.
+- `sw.js` : cache v34 comprenant le moteur budgétaire et les icônes PNG. Une mise à jour utilise le cache de la nouvelle version après installation complète et rechargement. Une installation incomplète conserve l’ancienne version.
 - `tests/core.test.cjs` et `tests/offline.test.cjs` : tests Node.js sans dépendance.
 - `tests/browser.test.cjs` : scénarios Chromium avec Playwright, uniquement outil de développement, profils jetables et données fictives.
 
@@ -70,7 +70,11 @@ Tests navigateur, avec Playwright et son Chromium déjà disponibles dans l’en
 node --test tests/browser.test.cjs
 ```
 
-`BASELINE_DIR` peut désigner une copie du commit `7c970e2` pour tester la mise à jour v32 → v33. Sans ce dossier, ce scénario est explicitement ignoré. `BROWSER_PROFILE_DIR` permet de choisir un dossier de profils de test, par exemple un chemin temporaire plus court sous Windows. `FILE_MODE=1` permet les tests d’interface sur fichiers locaux lorsque le réseau loopback est interdit ; les deux scénarios de véritable service worker sont alors explicitement ignorés. `SCREENSHOT_DIR` permet de conserver les captures de contrôle.
+`BASELINE_DIR` peut désigner une copie du commit `7c970e2` pour tester la mise à jour v32 → v34, ou du commit `5310c27` avec `BASELINE_CACHE=mes-depenses-v33` pour tester v33 → v34. Sans ce dossier, ce scénario est explicitement ignoré. `BROWSER_PROFILE_DIR` permet de choisir un dossier de profils de test, par exemple un chemin temporaire plus court sous Windows. `FILE_MODE=1` permet les tests d’interface sur fichiers locaux lorsque le réseau loopback est interdit ; les scénarios de véritable service worker sont alors explicitement ignorés. `SCREENSHOT_DIR` permet de conserver les captures de contrôle.
+
+### Préremplissage Bitstack
+
+L’application Android transmet le montant en centimes, la date de notification, le commerçant et un identifiant dans un fragment `#bitstack?…`. Ce fragment est retiré de l’adresse après lecture. La catégorie reste à choisir et aucune dépense n’est enregistrée avant confirmation. Un identifiant déjà enregistré est refusé ; l’annulation ne crée aucune dépense. La date correspond à la notification, pas à une date de transaction vérifiée auprès de Bitstack. La détection des doublons porte sur cet identifiant de notification, pas sur une transaction bancaire.
 
 ### Contrôles sur Android après mise à jour
 
